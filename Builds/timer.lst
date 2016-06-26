@@ -1,0 +1,768 @@
+   1               		.file	"timer.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+ 120               	.global	pre_set
+ 122               	pre_set:
+   1:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** /*
+   2:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c ****  * timer.c
+   3:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c ****  *Will use this file to increment the mS timer and eventually to control the PWM for the LEDs
+   4:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c ****  * Created: 4/28/15 9:21:53 PM
+   5:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c ****  *  Author: Roger
+   6:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c ****  */ 
+   7:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+   8:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** #include "timers.h"	
+   9:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  10:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  11:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  12:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** static u32 mSecond = 0;		//millisecond counter coming at Timer2 Rollover
+  13:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  14:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** static u32 camera_release = 0xFFFFFFFF;	//used by mS ISR to determine how lonw to hold down the cam
+  15:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** static u8	fiftymsroll = 50;	//decremented every millisecond, when it reaches zero is a flag that 50
+  16:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** static u8	fiftyms_flag = 0;	//flag to be set every 5 milliseconds.
+  17:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** static u8 trap_status = 0;		//This flag will be set to 1 after the trap is set and the state machin
+  18:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  19:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** ISR(TIMER2_COMPA_vect) //Will use this ISR to manage mS timer and call functions that need to get r
+  20:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** {   
+  21:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  22:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** mSecond ++;
+  23:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** fiftymsroll --;
+  24:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** if (0 == fiftymsroll){
+  25:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	fiftymsroll = 50;
+  26:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	fiftyms_flag = 1;	
+  27:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** }
+  28:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  29:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** if(mSecond >= camera_release){
+  30:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	camera_done();	//if the mS timer has passed its target value, let the 'Trap_PTX' file know via tim
+  31:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** }
+  32:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  33:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c ****     if(fiftymsroll == 25){
+  34:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	make40K();  //start pulsing the ultrsaonic transmitter
+  35:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** }
+  36:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** }	//end of mS rollover
+  37:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  38:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  39:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  40:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** ISR(TIMER0_OVF_vect) //Timer0 will rollover about every 65mS when running, as this is the clock for
+  41:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** {
+  42:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	static u8 t0ovf = 0;	//initialize compare variable. This gets incremented every rollover and compa
+  43:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	static u8 t0ovf_target =1;		//this is the target variable that gets set every rollover
+  44:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	u8 tmp_returnvar = 0;	//state runner will return this variable.  When the state machine is done th
+  45:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	t0ovf ++;
+  46:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	if (t0ovf == t0ovf_target){
+  47:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 		t0ovf = 0;
+  48:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 		tmp_returnvar = state_runner(&t0ovf_target);	//call 'state_runner' which is a function pointer th
+  49:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 		if(tmp_returnvar == 1) {}	//state_runner will return a 1 when the servo is in the armed position 
+  50:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 			else if (tmp_returnvar == 2) {
+  51:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 				clear_trap_busy();	//let the PTX file know that the state machine has run its course
+  52:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 				trap_status = 1;	//setting flag that will be checked by the PTX TX function
+  53:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 				}	
+  54:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 				
+  55:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	}
+  56:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** }
+  57:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  58:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  59:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** //return current mS timer
+  60:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** u32 get_mS_cnt (void){
+  61:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	return (mSecond);
+  62:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** }
+  63:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  64:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  65:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  66:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** //when I want to take a picture will pull down the shutter release pin and then use this to set a d
+  67:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** void set_camera_delay(u32 delay_time){
+  68:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	if(delay_time){
+  69:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 		camera_release = (mSecond + delay_time);
+  70:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	}else{
+  71:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 		camera_release = 0xFFFFFFFF;
+  72:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	}
+  73:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** }
+  74:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  75:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  76:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  77:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  78:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  79:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** /*Using Timer 0 output A to drive pulses into Servo.  Here's some early/initial config.  Will also 
+  80:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** with the 15.3Hz frequency I'm getting, the resoulution is ~256uS/timer unit.  Not a whole lot of ra
+  81:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** void Timer0_init(void){
+  82:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	TCCR0A = 0x81;	//setting up OC0A and WGM00
+  83:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	TCCR0B = 0x05;	//setting /1024 prescaler which should be good for ~15Hz, perfect for servo
+  84:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	OCR0A = 0x05;		//Arm Trap
+  85:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	state_runner = pre_arm;	//initializing pointer to point at the pre-arm function.  This will turn o
+  86:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	TIFR0 |= 0x01;	//write one to interrupt flag to clear it prior to enable.
+  87:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	TIMSK0 |= 0x01;	//enable interrupt on Timer0 overflow
+  88:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** }
+  89:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  90:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+  91:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** //millisecond timer implemented via compare ISR
+  92:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** void Timer2_init(void) {
+  93:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** //8-bit timer 2 for mS timer	
+  94:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	OCR2A = 250;	//this is top.  Timer has 8M clock /32 prescaler(*250) = 1Khz
+  95:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	TCCR2A = 0x42;	//This will change to 0x02 eventually, right now using COMA2 as output for testing
+  96:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	TCCR2B = 0x03;
+  97:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	TIFR2 |= 0X02;	//CLEAR Interrupt flag prior to enabling interrupts (by writing a 1 to it weird huh
+  98:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	TIMSK2 |= 0X02;	//enable Timer2 Compare Interrupts
+  99:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** }
+ 100:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 101:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 102:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 103:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 104:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 105:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** //see if 50mS have rolled over and if so reset the roll.
+ 106:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** u8	fifty_stat(void){
+ 107:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	if(fiftyms_flag){
+ 108:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 		fiftyms_flag = 0;
+ 109:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 		return 1;
+ 110:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	}else{
+ 111:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 		return 0;
+ 112:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	}
+ 113:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** }
+ 114:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 115:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 116:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 117:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** /*State Machine Functions which will be cycled through based on calls from Timer0 rollover interrup
+ 118:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** */
+ 119:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 120:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** u8 pre_set (u8* wait_time){
+ 124               	.LM0:
+ 125               	.LFBB1:
+ 126               	/* prologue: function */
+ 127               	/* frame size = 0 */
+ 128               	/* stack size = 0 */
+ 129               	.L__stack_usage = 0
+ 130 0000 FC01      		movw r30,r24
+ 121:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	OCR0A = 0;	//make sure timer is off
+ 132               	.LM1:
+ 133 0002 17BC      		out 0x27,__zero_reg__
+ 122:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	TCCR0B |= 0x05;	//setting prescaler bits which will enable clock
+ 135               	.LM2:
+ 136 0004 95B5      		in r25,0x25
+ 137 0006 9560      		ori r25,lo8(5)
+ 138 0008 95BD      		out 0x25,r25
+ 123:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	PORTD |= 0x20;	//turn on servo
+ 140               	.LM3:
+ 141 000a 5D9A      		sbi 0xb,5
+ 124:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	*wait_time = 0x03;	//this will be the number of 65mS period counter rollovers...3 corresponds to ~
+ 143               	.LM4:
+ 144 000c 83E0      		ldi r24,lo8(3)
+ 145 000e 8083      		st Z,r24
+ 125:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	state_runner = set;
+ 147               	.LM5:
+ 148 0010 80E0      		ldi r24,lo8(gs(set))
+ 149 0012 90E0      		ldi r25,hi8(gs(set))
+ 150 0014 9093 0000 		sts state_runner+1,r25
+ 151 0018 8093 0000 		sts state_runner,r24
+ 126:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	return 0;	//will only return 1 at end of 'off' pointer
+ 127:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** }
+ 153               	.LM6:
+ 154 001c 80E0      		ldi r24,0
+ 155 001e 0895      		ret
+ 157               	.Lscope1:
+ 160               	.global	pre_arm
+ 162               	pre_arm:
+ 128:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 129:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 130:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** u8 set (u8* wait_time){
+ 131:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	OCR0A = 0x09;	//value to set trap
+ 132:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	*wait_time = 0x10;	//rollovers of 65mS clock...This is about 1 second
+ 133:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	state_runner = arm;	//skip over pre-arm, that's where we'll intially jump into this at power-up
+ 134:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	take_picture();	//trigger shutter release to snap a shot as the trap is setting
+ 135:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	return 2;	//if seeing a 2 on the return can set a flag saying that we're set.
+ 136:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** }
+ 137:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 138:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 139:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** //pre-arm will get pointed to right after the timer is initialized, as this will get everything set
+ 140:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** u8 pre_arm (u8* wait_time){
+ 164               	.LM7:
+ 165               	.LFBB2:
+ 166               	/* prologue: function */
+ 167               	/* frame size = 0 */
+ 168               	/* stack size = 0 */
+ 169               	.L__stack_usage = 0
+ 170 0020 FC01      		movw r30,r24
+ 141:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	OCR0A = 0;	//ensure we're off
+ 172               	.LM8:
+ 173 0022 17BC      		out 0x27,__zero_reg__
+ 142:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	TCCR0B |= 0x05;	//make sure clock is enabled
+ 175               	.LM9:
+ 176 0024 95B5      		in r25,0x25
+ 177 0026 9560      		ori r25,lo8(5)
+ 178 0028 95BD      		out 0x25,r25
+ 143:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	PORTD |= 0x20;	//turn on servo
+ 180               	.LM10:
+ 181 002a 5D9A      		sbi 0xb,5
+ 144:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	*wait_time = 0x08;		//this will be the number of 65mS period counter rollovers...8 corresponds to 
+ 183               	.LM11:
+ 184 002c 88E0      		ldi r24,lo8(8)
+ 185 002e 8083      		st Z,r24
+ 145:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	state_runner = arm;	//point to arm where this will actually run the servo to the arm position.
+ 187               	.LM12:
+ 188 0030 80E0      		ldi r24,lo8(gs(arm))
+ 189 0032 90E0      		ldi r25,hi8(gs(arm))
+ 190 0034 9093 0000 		sts state_runner+1,r25
+ 191 0038 8093 0000 		sts state_runner,r24
+ 146:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	return 0;
+ 147:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** }
+ 193               	.LM13:
+ 194 003c 80E0      		ldi r24,0
+ 195 003e 0895      		ret
+ 197               	.Lscope2:
+ 200               	.global	arm
+ 202               	arm:
+ 148:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 149:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 150:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** //was hoping to disable timer in the name of saving power when the micro is sleeping.  Turns out th
+ 151:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** //shut off servo before disabling/enabling pulser or just live with the timer drawing current while
+ 152:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** u8 arm (u8* wait_time){
+ 204               	.LM14:
+ 205               	.LFBB3:
+ 206               	/* prologue: function */
+ 207               	/* frame size = 0 */
+ 208               	/* stack size = 0 */
+ 209               	.L__stack_usage = 0
+ 153:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	OCR0A = 0x05;	//Value to arm trap
+ 211               	.LM15:
+ 212 0040 25E0      		ldi r18,lo8(5)
+ 213 0042 27BD      		out 0x27,r18
+ 154:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	*wait_time = 0x10;	//wait about 1 second to ensure that the servo has reached it's goal.
+ 215               	.LM16:
+ 216 0044 20E1      		ldi r18,lo8(16)
+ 217 0046 FC01      		movw r30,r24
+ 218 0048 2083      		st Z,r18
+ 155:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	state_runner = off;	//point to off.
+ 220               	.LM17:
+ 221 004a 80E0      		ldi r24,lo8(gs(off))
+ 222 004c 90E0      		ldi r25,hi8(gs(off))
+ 223 004e 9093 0000 		sts state_runner+1,r25
+ 224 0052 8093 0000 		sts state_runner,r24
+ 156:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	return 0;
+ 157:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** }
+ 226               	.LM18:
+ 227 0056 80E0      		ldi r24,0
+ 228 0058 0895      		ret
+ 230               	.Lscope3:
+ 233               	.global	off
+ 235               	off:
+ 158:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 159:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 160:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** u8 off (u8* wait_time){
+ 237               	.LM19:
+ 238               	.LFBB4:
+ 239               	/* prologue: function */
+ 240               	/* frame size = 0 */
+ 241               	/* stack size = 0 */
+ 242               	.L__stack_usage = 0
+ 161:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	OCR0A = 0;
+ 244               	.LM20:
+ 245 005a 17BC      		out 0x27,__zero_reg__
+ 162:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	PORTD &= ~(0x20);	//turn off power to servo
+ 247               	.LM21:
+ 248 005c 5D98      		cbi 0xb,5
+ 163:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	*wait_time = 0x01;	//make sure that the new overflow counter target is going to get reached next I
+ 250               	.LM22:
+ 251 005e 21E0      		ldi r18,lo8(1)
+ 252 0060 FC01      		movw r30,r24
+ 253 0062 2083      		st Z,r18
+ 164:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	TIMSK2 &= ~(0x01);	//disable Timer0 Overflow Interrupts
+ 255               	.LM23:
+ 256 0064 E0E7      		ldi r30,lo8(112)
+ 257 0066 F0E0      		ldi r31,0
+ 258 0068 8081      		ld r24,Z
+ 259 006a 8E7F      		andi r24,lo8(-2)
+ 260 006c 8083      		st Z,r24
+ 165:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	return 1;
+ 166:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** }
+ 262               	.LM24:
+ 263 006e 81E0      		ldi r24,lo8(1)
+ 264 0070 0895      		ret
+ 266               	.Lscope4:
+ 269               	.global	set
+ 271               	set:
+ 130:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	OCR0A = 0x09;	//value to set trap
+ 273               	.LM25:
+ 274               	.LFBB5:
+ 275               	/* prologue: function */
+ 276               	/* frame size = 0 */
+ 277               	/* stack size = 0 */
+ 278               	.L__stack_usage = 0
+ 131:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	*wait_time = 0x10;	//rollovers of 65mS clock...This is about 1 second
+ 280               	.LM26:
+ 281 0072 29E0      		ldi r18,lo8(9)
+ 282 0074 27BD      		out 0x27,r18
+ 132:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	state_runner = arm;	//skip over pre-arm, that's where we'll intially jump into this at power-up
+ 284               	.LM27:
+ 285 0076 20E1      		ldi r18,lo8(16)
+ 286 0078 FC01      		movw r30,r24
+ 287 007a 2083      		st Z,r18
+ 133:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	take_picture();	//trigger shutter release to snap a shot as the trap is setting
+ 289               	.LM28:
+ 290 007c 80E0      		ldi r24,lo8(gs(arm))
+ 291 007e 90E0      		ldi r25,hi8(gs(arm))
+ 292 0080 9093 0000 		sts state_runner+1,r25
+ 293 0084 8093 0000 		sts state_runner,r24
+ 134:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	return 2;	//if seeing a 2 on the return can set a flag saying that we're set.
+ 295               	.LM29:
+ 296 0088 0E94 0000 		call take_picture
+ 136:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 298               	.LM30:
+ 299 008c 82E0      		ldi r24,lo8(2)
+ 300 008e 0895      		ret
+ 302               	.Lscope5:
+ 304               	.global	__vector_7
+ 306               	__vector_7:
+  20:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 308               	.LM31:
+ 309               	.LFBB6:
+ 310 0090 1F92      		push r1
+ 311 0092 0F92      		push r0
+ 312 0094 0FB6      		in r0,__SREG__
+ 313 0096 0F92      		push r0
+ 314 0098 1124      		clr __zero_reg__
+ 315 009a 2F93      		push r18
+ 316 009c 3F93      		push r19
+ 317 009e 4F93      		push r20
+ 318 00a0 5F93      		push r21
+ 319 00a2 6F93      		push r22
+ 320 00a4 7F93      		push r23
+ 321 00a6 8F93      		push r24
+ 322 00a8 9F93      		push r25
+ 323 00aa AF93      		push r26
+ 324 00ac BF93      		push r27
+ 325 00ae EF93      		push r30
+ 326 00b0 FF93      		push r31
+ 327               	/* prologue: Signal */
+ 328               	/* frame size = 0 */
+ 329               	/* stack size = 15 */
+ 330               	.L__stack_usage = 15
+  22:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** fiftymsroll --;
+ 332               	.LM32:
+ 333 00b2 8091 0000 		lds r24,mSecond
+ 334 00b6 9091 0000 		lds r25,mSecond+1
+ 335 00ba A091 0000 		lds r26,mSecond+2
+ 336 00be B091 0000 		lds r27,mSecond+3
+ 337 00c2 0196      		adiw r24,1
+ 338 00c4 A11D      		adc r26,__zero_reg__
+ 339 00c6 B11D      		adc r27,__zero_reg__
+ 340 00c8 8093 0000 		sts mSecond,r24
+ 341 00cc 9093 0000 		sts mSecond+1,r25
+ 342 00d0 A093 0000 		sts mSecond+2,r26
+ 343 00d4 B093 0000 		sts mSecond+3,r27
+  23:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** if (0 == fiftymsroll){
+ 345               	.LM33:
+ 346 00d8 2091 0000 		lds r18,fiftymsroll
+ 347 00dc 2150      		subi r18,lo8(-(-1))
+  24:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	fiftymsroll = 50;
+ 349               	.LM34:
+ 350 00de 01F0      		breq .L7
+  23:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** if (0 == fiftymsroll){
+ 352               	.LM35:
+ 353 00e0 2093 0000 		sts fiftymsroll,r18
+ 354 00e4 00C0      		rjmp .L8
+ 355               	.L7:
+  25:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	fiftyms_flag = 1;	
+ 357               	.LM36:
+ 358 00e6 22E3      		ldi r18,lo8(50)
+ 359 00e8 2093 0000 		sts fiftymsroll,r18
+  26:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** }
+ 361               	.LM37:
+ 362 00ec 21E0      		ldi r18,lo8(1)
+ 363 00ee 2093 0000 		sts fiftyms_flag,r18
+ 364               	.L8:
+  29:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	camera_done();	//if the mS timer has passed its target value, let the 'Trap_PTX' file know via tim
+ 366               	.LM38:
+ 367 00f2 4091 0000 		lds r20,camera_release
+ 368 00f6 5091 0000 		lds r21,camera_release+1
+ 369 00fa 6091 0000 		lds r22,camera_release+2
+ 370 00fe 7091 0000 		lds r23,camera_release+3
+ 371 0102 8417      		cp r24,r20
+ 372 0104 9507      		cpc r25,r21
+ 373 0106 A607      		cpc r26,r22
+ 374 0108 B707      		cpc r27,r23
+ 375 010a 00F0      		brlo .L9
+  30:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** }
+ 377               	.LM39:
+ 378 010c 0E94 0000 		call camera_done
+ 379               	.L9:
+  33:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	make40K();  //start pulsing the ultrsaonic transmitter
+ 381               	.LM40:
+ 382 0110 8091 0000 		lds r24,fiftymsroll
+ 383 0114 8931      		cpi r24,lo8(25)
+ 384 0116 01F4      		brne .L6
+  34:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** }
+ 386               	.LM41:
+ 387 0118 0E94 0000 		call make40K
+ 388               	.L6:
+ 389               	/* epilogue start */
+  36:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 391               	.LM42:
+ 392 011c FF91      		pop r31
+ 393 011e EF91      		pop r30
+ 394 0120 BF91      		pop r27
+ 395 0122 AF91      		pop r26
+ 396 0124 9F91      		pop r25
+ 397 0126 8F91      		pop r24
+ 398 0128 7F91      		pop r23
+ 399 012a 6F91      		pop r22
+ 400 012c 5F91      		pop r21
+ 401 012e 4F91      		pop r20
+ 402 0130 3F91      		pop r19
+ 403 0132 2F91      		pop r18
+ 404 0134 0F90      		pop r0
+ 405 0136 0FBE      		out __SREG__,r0
+ 406 0138 0F90      		pop r0
+ 407 013a 1F90      		pop r1
+ 408 013c 1895      		reti
+ 410               	.Lscope6:
+ 412               	.global	__vector_16
+ 414               	__vector_16:
+  41:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	static u8 t0ovf = 0;	//initialize compare variable. This gets incremented every rollover and compa
+ 416               	.LM43:
+ 417               	.LFBB7:
+ 418 013e 1F92      		push r1
+ 419 0140 0F92      		push r0
+ 420 0142 0FB6      		in r0,__SREG__
+ 421 0144 0F92      		push r0
+ 422 0146 1124      		clr __zero_reg__
+ 423 0148 2F93      		push r18
+ 424 014a 3F93      		push r19
+ 425 014c 4F93      		push r20
+ 426 014e 5F93      		push r21
+ 427 0150 6F93      		push r22
+ 428 0152 7F93      		push r23
+ 429 0154 8F93      		push r24
+ 430 0156 9F93      		push r25
+ 431 0158 AF93      		push r26
+ 432 015a BF93      		push r27
+ 433 015c EF93      		push r30
+ 434 015e FF93      		push r31
+ 435               	/* prologue: Signal */
+ 436               	/* frame size = 0 */
+ 437               	/* stack size = 15 */
+ 438               	.L__stack_usage = 15
+  45:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	if (t0ovf == t0ovf_target){
+ 440               	.LM44:
+ 441 0160 8091 0000 		lds r24,t0ovf.1961
+ 442 0164 8F5F      		subi r24,lo8(-(1))
+ 443 0166 8093 0000 		sts t0ovf.1961,r24
+  46:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 		t0ovf = 0;
+ 445               	.LM45:
+ 446 016a 9091 0000 		lds r25,t0ovf_target.1962
+ 447 016e 8913      		cpse r24,r25
+ 448 0170 00C0      		rjmp .L12
+  47:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 		tmp_returnvar = state_runner(&t0ovf_target);	//call 'state_runner' which is a function pointer th
+ 450               	.LM46:
+ 451 0172 1092 0000 		sts t0ovf.1961,__zero_reg__
+  48:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 		if(tmp_returnvar == 1) {}	//state_runner will return a 1 when the servo is in the armed position 
+ 453               	.LM47:
+ 454 0176 E091 0000 		lds r30,state_runner
+ 455 017a F091 0000 		lds r31,state_runner+1
+ 456 017e 80E0      		ldi r24,lo8(t0ovf_target.1962)
+ 457 0180 90E0      		ldi r25,hi8(t0ovf_target.1962)
+ 458 0182 0995      		icall
+  50:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 				clear_trap_busy();	//let the PTX file know that the state machine has run its course
+ 460               	.LM48:
+ 461 0184 8230      		cpi r24,lo8(2)
+ 462 0186 01F4      		brne .L12
+  51:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 				trap_status = 1;	//setting flag that will be checked by the PTX TX function
+ 464               	.LM49:
+ 465 0188 0E94 0000 		call clear_trap_busy
+  52:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 				}	
+ 467               	.LM50:
+ 468 018c 81E0      		ldi r24,lo8(1)
+ 469 018e 8093 0000 		sts trap_status,r24
+ 470               	.L12:
+ 471               	/* epilogue start */
+  56:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 473               	.LM51:
+ 474 0192 FF91      		pop r31
+ 475 0194 EF91      		pop r30
+ 476 0196 BF91      		pop r27
+ 477 0198 AF91      		pop r26
+ 478 019a 9F91      		pop r25
+ 479 019c 8F91      		pop r24
+ 480 019e 7F91      		pop r23
+ 481 01a0 6F91      		pop r22
+ 482 01a2 5F91      		pop r21
+ 483 01a4 4F91      		pop r20
+ 484 01a6 3F91      		pop r19
+ 485 01a8 2F91      		pop r18
+ 486 01aa 0F90      		pop r0
+ 487 01ac 0FBE      		out __SREG__,r0
+ 488 01ae 0F90      		pop r0
+ 489 01b0 1F90      		pop r1
+ 490 01b2 1895      		reti
+ 496               	.Lscope7:
+ 498               	.global	get_mS_cnt
+ 500               	get_mS_cnt:
+  60:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	return (mSecond);
+ 502               	.LM52:
+ 503               	.LFBB8:
+ 504               	/* prologue: function */
+ 505               	/* frame size = 0 */
+ 506               	/* stack size = 0 */
+ 507               	.L__stack_usage = 0
+  61:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** }
+ 509               	.LM53:
+ 510 01b4 6091 0000 		lds r22,mSecond
+ 511 01b8 7091 0000 		lds r23,mSecond+1
+ 512 01bc 8091 0000 		lds r24,mSecond+2
+ 513 01c0 9091 0000 		lds r25,mSecond+3
+  62:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 515               	.LM54:
+ 516 01c4 0895      		ret
+ 518               	.Lscope8:
+ 521               	.global	set_camera_delay
+ 523               	set_camera_delay:
+  67:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	if(delay_time){
+ 525               	.LM55:
+ 526               	.LFBB9:
+ 527 01c6 0F93      		push r16
+ 528 01c8 1F93      		push r17
+ 529               	/* prologue: function */
+ 530               	/* frame size = 0 */
+ 531               	/* stack size = 2 */
+ 532               	.L__stack_usage = 2
+  68:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 		camera_release = (mSecond + delay_time);
+ 534               	.LM56:
+ 535 01ca 6115      		cp r22,__zero_reg__
+ 536 01cc 7105      		cpc r23,__zero_reg__
+ 537 01ce 8105      		cpc r24,__zero_reg__
+ 538 01d0 9105      		cpc r25,__zero_reg__
+ 539 01d2 01F0      		breq .L18
+  69:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	}else{
+ 541               	.LM57:
+ 542 01d4 0091 0000 		lds r16,mSecond
+ 543 01d8 1091 0000 		lds r17,mSecond+1
+ 544 01dc 2091 0000 		lds r18,mSecond+2
+ 545 01e0 3091 0000 		lds r19,mSecond+3
+ 546 01e4 DC01      		movw r26,r24
+ 547 01e6 CB01      		movw r24,r22
+ 548 01e8 800F      		add r24,r16
+ 549 01ea 911F      		adc r25,r17
+ 550 01ec A21F      		adc r26,r18
+ 551 01ee B31F      		adc r27,r19
+ 552 01f0 00C0      		rjmp .L20
+ 553               	.L18:
+  71:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	}
+ 555               	.LM58:
+ 556 01f2 8FEF      		ldi r24,lo8(-1)
+ 557 01f4 9FEF      		ldi r25,lo8(-1)
+ 558 01f6 DC01      		movw r26,r24
+ 559               	.L20:
+ 560 01f8 8093 0000 		sts camera_release,r24
+ 561 01fc 9093 0000 		sts camera_release+1,r25
+ 562 0200 A093 0000 		sts camera_release+2,r26
+ 563 0204 B093 0000 		sts camera_release+3,r27
+ 564               	/* epilogue start */
+  73:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 566               	.LM59:
+ 567 0208 1F91      		pop r17
+ 568 020a 0F91      		pop r16
+ 569 020c 0895      		ret
+ 571               	.Lscope9:
+ 573               	.global	Timer0_init
+ 575               	Timer0_init:
+  81:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	TCCR0A = 0x81;	//setting up OC0A and WGM00
+ 577               	.LM60:
+ 578               	.LFBB10:
+ 579               	/* prologue: function */
+ 580               	/* frame size = 0 */
+ 581               	/* stack size = 0 */
+ 582               	.L__stack_usage = 0
+  82:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	TCCR0B = 0x05;	//setting /1024 prescaler which should be good for ~15Hz, perfect for servo
+ 584               	.LM61:
+ 585 020e 81E8      		ldi r24,lo8(-127)
+ 586 0210 84BD      		out 0x24,r24
+  83:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	OCR0A = 0x05;		//Arm Trap
+ 588               	.LM62:
+ 589 0212 85E0      		ldi r24,lo8(5)
+ 590 0214 85BD      		out 0x25,r24
+  84:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	state_runner = pre_arm;	//initializing pointer to point at the pre-arm function.  This will turn o
+ 592               	.LM63:
+ 593 0216 87BD      		out 0x27,r24
+  85:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	TIFR0 |= 0x01;	//write one to interrupt flag to clear it prior to enable.
+ 595               	.LM64:
+ 596 0218 80E0      		ldi r24,lo8(gs(pre_arm))
+ 597 021a 90E0      		ldi r25,hi8(gs(pre_arm))
+ 598 021c 9093 0000 		sts state_runner+1,r25
+ 599 0220 8093 0000 		sts state_runner,r24
+  86:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	TIMSK0 |= 0x01;	//enable interrupt on Timer0 overflow
+ 601               	.LM65:
+ 602 0224 A89A      		sbi 0x15,0
+  87:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** }
+ 604               	.LM66:
+ 605 0226 EEE6      		ldi r30,lo8(110)
+ 606 0228 F0E0      		ldi r31,0
+ 607 022a 8081      		ld r24,Z
+ 608 022c 8160      		ori r24,lo8(1)
+ 609 022e 8083      		st Z,r24
+ 610 0230 0895      		ret
+ 612               	.Lscope10:
+ 614               	.global	Timer2_init
+ 616               	Timer2_init:
+  92:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** //8-bit timer 2 for mS timer	
+ 618               	.LM67:
+ 619               	.LFBB11:
+ 620               	/* prologue: function */
+ 621               	/* frame size = 0 */
+ 622               	/* stack size = 0 */
+ 623               	.L__stack_usage = 0
+  94:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	TCCR2A = 0x42;	//This will change to 0x02 eventually, right now using COMA2 as output for testing
+ 625               	.LM68:
+ 626 0232 8AEF      		ldi r24,lo8(-6)
+ 627 0234 8093 B300 		sts 179,r24
+  95:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	TCCR2B = 0x03;
+ 629               	.LM69:
+ 630 0238 82E4      		ldi r24,lo8(66)
+ 631 023a 8093 B000 		sts 176,r24
+  96:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	TIFR2 |= 0X02;	//CLEAR Interrupt flag prior to enabling interrupts (by writing a 1 to it weird huh
+ 633               	.LM70:
+ 634 023e 83E0      		ldi r24,lo8(3)
+ 635 0240 8093 B100 		sts 177,r24
+  97:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	TIMSK2 |= 0X02;	//enable Timer2 Compare Interrupts
+ 637               	.LM71:
+ 638 0244 B99A      		sbi 0x17,1
+  98:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** }
+ 640               	.LM72:
+ 641 0246 E0E7      		ldi r30,lo8(112)
+ 642 0248 F0E0      		ldi r31,0
+ 643 024a 8081      		ld r24,Z
+ 644 024c 8260      		ori r24,lo8(2)
+ 645 024e 8083      		st Z,r24
+ 646 0250 0895      		ret
+ 648               	.Lscope11:
+ 650               	.global	fifty_stat
+ 652               	fifty_stat:
+ 106:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	if(fiftyms_flag){
+ 654               	.LM73:
+ 655               	.LFBB12:
+ 656               	/* prologue: function */
+ 657               	/* frame size = 0 */
+ 658               	/* stack size = 0 */
+ 659               	.L__stack_usage = 0
+ 107:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 		fiftyms_flag = 0;
+ 661               	.LM74:
+ 662 0252 8091 0000 		lds r24,fiftyms_flag
+ 663 0256 8823      		tst r24
+ 664 0258 01F0      		breq .L24
+ 108:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 		return 1;
+ 666               	.LM75:
+ 667 025a 1092 0000 		sts fiftyms_flag,__zero_reg__
+ 109:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	}else{
+ 669               	.LM76:
+ 670 025e 81E0      		ldi r24,lo8(1)
+ 671               	.L24:
+ 113:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 673               	.LM77:
+ 674 0260 0895      		ret
+ 676               	.Lscope12:
+ 678               	.global	chk_trap_status
+ 680               	chk_trap_status:
+ 167:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 168:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** //////////////////////////////////////////////////////////////end of state machine functions
+ 169:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 170:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** //this is determined by the state machine and used as a flag in the bitfield being sent to the PRX
+ 171:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** u8 chk_trap_status(void){
+ 682               	.LM78:
+ 683               	.LFBB13:
+ 684               	/* prologue: function */
+ 685               	/* frame size = 0 */
+ 686               	/* stack size = 0 */
+ 687               	.L__stack_usage = 0
+ 172:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	return trap_status;
+ 173:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** }
+ 689               	.LM79:
+ 690 0262 8091 0000 		lds r24,trap_status
+ 691 0266 0895      		ret
+ 693               	.Lscope13:
+ 695               	.global	set_trap
+ 697               	set_trap:
+ 174:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 
+ 175:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** //When this is called it will re-initialize the Timer0 interrupt and point function pointer towards
+ 176:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** void set_trap (void){
+ 699               	.LM80:
+ 700               	.LFBB14:
+ 701               	/* prologue: function */
+ 702               	/* frame size = 0 */
+ 703               	/* stack size = 0 */
+ 704               	.L__stack_usage = 0
+ 177:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	TIMSK2 |= 0x01;	//re-enable Timer0 Overflow Interrupts
+ 706               	.LM81:
+ 707 0268 E0E7      		ldi r30,lo8(112)
+ 708 026a F0E0      		ldi r31,0
+ 709 026c 8081      		ld r24,Z
+ 710 026e 8160      		ori r24,lo8(1)
+ 711 0270 8083      		st Z,r24
+ 178:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/timer.c **** 	state_runner = pre_set;	//point to preparing to arm
+ 713               	.LM82:
+ 714 0272 80E0      		ldi r24,lo8(gs(pre_set))
+ 715 0274 90E0      		ldi r25,hi8(gs(pre_set))
+ 716 0276 9093 0000 		sts state_runner+1,r25
+ 717 027a 8093 0000 		sts state_runner,r24
+ 718 027e 0895      		ret
+ 720               	.Lscope14:
+ 721               		.data
+ 724               	t0ovf_target.1962:
+ 725 0000 01        		.byte	1
+ 726               		.local	t0ovf.1961
+ 727               		.comm	t0ovf.1961,1,1
+ 728               		.local	trap_status
+ 729               		.comm	trap_status,1,1
+ 730               		.local	fiftyms_flag
+ 731               		.comm	fiftyms_flag,1,1
+ 734               	fiftymsroll:
+ 735 0001 32        		.byte	50
+ 738               	camera_release:
+ 739 0002 FF        		.byte	-1
+ 740 0003 FF        		.byte	-1
+ 741 0004 FF        		.byte	-1
+ 742 0005 FF        		.byte	-1
+ 743               		.local	mSecond
+ 744               		.comm	mSecond,4,1
+ 745               		.comm	state_runner,2,1
+ 752               		.text
+ 754               	.Letext0:
+ 755               		.ident	"GCC: (GNU) 4.9.3"
+ 756               	.global __do_copy_data
+ 757               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 timer.c
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:2      *ABS*:000000000000003e __SP_H__
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:3      *ABS*:000000000000003d __SP_L__
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:4      *ABS*:000000000000003f __SREG__
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:5      *ABS*:0000000000000000 __tmp_reg__
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:6      *ABS*:0000000000000001 __zero_reg__
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:122    .text:0000000000000000 pre_set
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:271    .text:0000000000000072 set
+                            *COM*:0000000000000002 state_runner
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:162    .text:0000000000000020 pre_arm
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:202    .text:0000000000000040 arm
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:235    .text:000000000000005a off
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:306    .text:0000000000000090 __vector_7
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:731    .bss:0000000000000003 mSecond
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:734    .data:0000000000000001 fiftymsroll
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:729    .bss:0000000000000002 fiftyms_flag
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:738    .data:0000000000000002 camera_release
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:414    .text:000000000000013e __vector_16
+                             .bss:0000000000000000 t0ovf.1961
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:724    .data:0000000000000000 t0ovf_target.1962
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:727    .bss:0000000000000001 trap_status
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:500    .text:00000000000001b4 get_mS_cnt
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:523    .text:00000000000001c6 set_camera_delay
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:575    .text:000000000000020e Timer0_init
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:616    .text:0000000000000232 Timer2_init
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:652    .text:0000000000000252 fifty_stat
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:680    .text:0000000000000262 chk_trap_status
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccFFnOiv.s:697    .text:0000000000000268 set_trap
+
+UNDEFINED SYMBOLS
+take_picture
+camera_done
+make40K
+clear_trap_busy
+__do_copy_data
+__do_clear_bss

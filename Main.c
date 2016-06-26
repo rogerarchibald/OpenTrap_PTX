@@ -3,11 +3,13 @@ main.c
  *
  * Created: 5/9/15 6:07:47 PM
  *  Author: Roger
- Starting notes here at PTX_rev3 which has a new type of motion indicator: Will use an optical gate as opposed to the PIR.  Hoping this will give better noise/thermal immunity.  There are a few changes to the circuit that will need firmware changes.  They are:
- The light control was on PB2.  It's been moved to PD3, will need to change LED/LDO drive
- Now need to generate a 38Khz drive signal, will use Timer1B which is tied to TB2...Hence need for above change.
- PIR_IN is now IR_IN.  The signal in is active low and will be inactive when the path is blocked, so the logic from before holds true.  Initially I'm going to consistently drive the IR_LED, but for battery conservation (>100mA draw from that guy) I'll eventually disable it after a read.  Will need to determine the best moment for that.
- */ 
+ 
+This code is currently for board Rev4 which uses an ultrasonic range finder as opposed to the older IR.  All the sonic stuff is un ultrasonicStuffs.c.
+ 
+ 
+ I'm making a mS timer off of Timer2 and this will crank up some RF comms every 50 mS.  halfway through that 50mS countdown I'm going to fire the Ultrasonic transmitter and then wait to see what bounces back.
+ 
+ */
 
 
 #include <util/delay.h>
@@ -41,7 +43,6 @@ int main(void)
 DDRD |= 0xFA;	//Chip Select Not, TXData UART, Timer0A outputs, servo power enable, IR input on PD2.  Power_on output on PD4.  Light control on PD3
 PORTD |= 0x10;	//Setting PortD4 to keep the power turned on.
 Timer0_init();	//initialize Timer0 for Servo drive
-Timer1_init();	//generate the 38Khz signal for driving the IR LED
 Timer2_init();	//using this for mS timer/50mS rollover
 ADC_Init();
 DDRB = 0x2F;		//All of portB = outputs with exception of PB6-7 (XTAL), and PB4 (MISO).
@@ -69,7 +70,7 @@ initialize_NRF();
 	if(fifty_stat()){
 		
 		dataout[0] = fill_TX_bitfield();		//function to populate bitfield after scanning appropriate stuffs.
-		T38KOff();	//turn of 38K Timer.  This should probably go elsewhere, just trying it for now
+		
 	
 	
 	sendPayLoad(W_TX_PAYLOAD, dataout, 2);

@@ -7,6 +7,7 @@
  
  Want to set up the ADC as 8-bit, will left-align the results and drop the Low register...8-bits is plenty of resolution for my needs here and it's easier to deal with.
  In this first setup I've got a resistor divider on VIN such where Rtop = 100K and Rbottom = 47K so the divide by = /3.12.  7.2Vin/3.12 = 2.3V.  VCC = 3.3V 2.3/3.3 * 256 = 178.
+ ***This was written for an older version: going forward I might go to 3V instead of 3.3 which will require a math change
  */ 
 
 #include "ADC.h"

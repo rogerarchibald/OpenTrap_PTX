@@ -19,7 +19,7 @@ volatile static u8 camera_busy = 0;	//flag to detect if the camera is busy or no
 
 u8 fill_TX_bitfield(void){
 	u8 tempval = 0x15;	//0x15 is starting point, not critical
-	tempval |= (checkIR());	//IR_stateval
+//	tempval |= (checkIR());	//IR_stateval
 	tempval |= (readADC() << 6);	//readADC will return a 1 if the battery voltage is below a threshold
 	start_ADC_conv();	//initialize a new conversion for next time
 	tempval |= (chk_trap_status() << 5);	
@@ -75,13 +75,3 @@ set_camera_delay(0);	//sending zero here will stop callbacks(push them back unti
 camera_busy = 0;	
 }
 
-//before getting here and reading this (happens every 50mS) I will enable the 38KHz drive (will turn it on at 49mS).  If the beam isn't broken, PIND2 will be low.  If the beam is broken, PIND2 will be hi.
-u8 checkIR(void){
-	if(PIND & 0x04){
-		led2_on;
-		return 0x80;	
-	}else{
-		led2_off;
-		return 0;
-	}
-	}

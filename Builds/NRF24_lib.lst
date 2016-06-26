@@ -1,0 +1,1116 @@
+   1               		.file	"NRF24_lib.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+ 104               	.global	enable_PRX
+ 106               	enable_PRX:
+   1:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** //
+   2:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** //  NRF24_lib.c
+   3:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** //  
+   4:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** //
+   5:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** //  Created by Roger on 5/12/15.
+   6:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** //
+   7:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** //
+   8:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+   9:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** #include "NRF24_lib.h"
+  10:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+  11:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+  12:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** static u8 CFGValues = 0x7C;	//7C where I'm going to start this.  Two things that will be tweaked ar
+  13:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** u8 Addy [] = {0x52, 0x6F, 0x67, 0x65, 0x72}; //Believe that as long as we're looking at only one TX
+  14:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+  15:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** //this will only be called just prior to initializing the NRF in case 'PRF' has been defined in Mai
+  16:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** void enable_PRX (void){
+ 108               	.LM0:
+ 109               	.LFBB1:
+ 110               	/* prologue: function */
+ 111               	/* frame size = 0 */
+ 112               	/* stack size = 0 */
+ 113               	.L__stack_usage = 0
+  17:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** CFGValues |= 0x01;
+ 115               	.LM1:
+ 116 0000 8091 0000 		lds r24,CFGValues
+ 117 0004 8160      		ori r24,lo8(1)
+ 118 0006 8093 0000 		sts CFGValues,r24
+ 119 000a 0895      		ret
+ 121               	.Lscope1:
+ 124               	.global	sendbyte
+ 126               	sendbyte:
+  18:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+  19:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+  20:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+  21:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** //This is the lowest level function which requires something above it to enable the CSN line.  It j
+  22:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** void sendbyte (u8 sendit){
+ 128               	.LM2:
+ 129               	.LFBB2:
+ 130               	/* prologue: function */
+ 131               	/* frame size = 0 */
+ 132               	/* stack size = 0 */
+ 133               	.L__stack_usage = 0
+  23:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c ****     SPDR = sendit;                  //write 'sendit' to the data register.
+ 135               	.LM3:
+ 136 000c 8EBD      		out 0x2e,r24
+ 137               	.L3:
+  24:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c ****     while(!(SPSR & (1<<SPIF) ));    //wait for transmission to complete.
+ 139               	.LM4:
+ 140 000e 0DB4      		in __tmp_reg__,0x2d
+ 141 0010 07FE      		sbrs __tmp_reg__,7
+ 142 0012 00C0      		rjmp .L3
+ 143               	/* epilogue start */
+  25:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+ 145               	.LM5:
+ 146 0014 0895      		ret
+ 148               	.Lscope2:
+ 151               	.global	sendcmd
+ 153               	sendcmd:
+  26:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+  27:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** //Sending a single byte and not requiring a response.  sendbyte is a sub-function
+  28:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** void sendcmd (u8 byteout){
+ 155               	.LM6:
+ 156               	.LFBB3:
+ 157               	/* prologue: function */
+ 158               	/* frame size = 0 */
+ 159               	/* stack size = 0 */
+ 160               	.L__stack_usage = 0
+  29:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c ****     clr_csn;
+ 162               	.LM7:
+ 163 0016 5F98      		cbi 0xb,7
+  30:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c ****     sendbyte(byteout);
+ 165               	.LM8:
+ 166 0018 0E94 0000 		call sendbyte
+  31:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c ****     set_csn;
+ 168               	.LM9:
+ 169 001c 5F9A      		sbi 0xb,7
+ 170 001e 0895      		ret
+ 172               	.Lscope3:
+ 174               	.global	readRXWidth
+ 176               	readRXWidth:
+  32:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+  33:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+  34:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** u8 readRXWidth(void){
+ 178               	.LM10:
+ 179               	.LFBB4:
+ 180               	/* prologue: function */
+ 181               	/* frame size = 0 */
+ 182               	/* stack size = 0 */
+ 183               	.L__stack_usage = 0
+  35:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	clr_csn;
+ 185               	.LM11:
+ 186 0020 5F98      		cbi 0xb,7
+  36:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	sendbyte(R_RX_PL_WID);	//command to read the payload width
+ 188               	.LM12:
+ 189 0022 80E6      		ldi r24,lo8(96)
+ 190 0024 0E94 0000 		call sendbyte
+  37:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	sendbyte(0x55);			//dummy byte while clocking out pl width
+ 192               	.LM13:
+ 193 0028 85E5      		ldi r24,lo8(85)
+ 194 002a 0E94 0000 		call sendbyte
+  38:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	set_csn;
+ 196               	.LM14:
+ 197 002e 5F9A      		sbi 0xb,7
+  39:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	return	SPDR;		//return RX Width
+ 199               	.LM15:
+ 200 0030 8EB5      		in r24,0x2e
+  40:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+ 202               	.LM16:
+ 203 0032 0895      		ret
+ 205               	.Lscope4:
+ 207               	.global	flushTx
+ 209               	flushTx:
+  41:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+  42:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+  43:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** void flushTx(void){
+ 211               	.LM17:
+ 212               	.LFBB5:
+ 213               	/* prologue: function */
+ 214               	/* frame size = 0 */
+ 215               	/* stack size = 0 */
+ 216               	.L__stack_usage = 0
+  44:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	sendcmd(FLUSH_TX);
+ 218               	.LM18:
+ 219 0034 81EE      		ldi r24,lo8(-31)
+ 220 0036 0C94 0000 		jmp sendcmd
+ 222               	.Lscope5:
+ 224               	.global	flushRx
+ 226               	flushRx:
+  45:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+  46:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+  47:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** void flushRx(void){
+ 228               	.LM19:
+ 229               	.LFBB6:
+ 230               	/* prologue: function */
+ 231               	/* frame size = 0 */
+ 232               	/* stack size = 0 */
+ 233               	.L__stack_usage = 0
+  48:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	sendcmd(FLUSH_RX);
+ 235               	.LM20:
+ 236 003a 82EE      		ldi r24,lo8(-30)
+ 237 003c 0C94 0000 		jmp sendcmd
+ 239               	.Lscope6:
+ 241               	.global	readStatus
+ 243               	readStatus:
+  49:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+  50:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+  51:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** //Read the STATUS register which is clocked out as the first byte of any SPI transfer is clocked in
+  52:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** u8 readStatus (void){
+ 245               	.LM21:
+ 246               	.LFBB7:
+ 247               	/* prologue: function */
+ 248               	/* frame size = 0 */
+ 249               	/* stack size = 0 */
+ 250               	.L__stack_usage = 0
+  53:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c ****     clr_csn;
+ 252               	.LM22:
+ 253 0040 5F98      		cbi 0xb,7
+  54:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c ****     sendbyte(0xff); //probably want to define this as 'nop' in NRF-specific Library file
+ 255               	.LM23:
+ 256 0042 8FEF      		ldi r24,lo8(-1)
+ 257 0044 0E94 0000 		call sendbyte
+  55:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c ****     set_csn;
+ 259               	.LM24:
+ 260 0048 5F9A      		sbi 0xb,7
+  56:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c ****     return SPDR;
+ 262               	.LM25:
+ 263 004a 8EB5      		in r24,0x2e
+  57:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+ 265               	.LM26:
+ 266 004c 0895      		ret
+ 268               	.Lscope7:
+ 273               	.global	readReg
+ 275               	readReg:
+  58:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+  59:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+  60:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** /*Function below here will Read registers where 'Register' is the 5-bit address of the register whi
+  61:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+  62:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** void readReg(u8 Register, u8 * destination, u8 size){
+ 277               	.LM27:
+ 278               	.LFBB8:
+ 279 004e EF92      		push r14
+ 280 0050 FF92      		push r15
+ 281 0052 0F93      		push r16
+ 282 0054 1F93      		push r17
+ 283 0056 CF93      		push r28
+ 284 0058 DF93      		push r29
+ 285               	/* prologue: function */
+ 286               	/* frame size = 0 */
+ 287               	/* stack size = 6 */
+ 288               	.L__stack_usage = 6
+ 289 005a 8B01      		movw r16,r22
+ 290 005c F42E      		mov r15,r20
+  63:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** clr_csn;
+ 292               	.LM28:
+ 293 005e 5F98      		cbi 0xb,7
+  64:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** sendbyte (Register); //write the adress of the register we're writing to.
+ 295               	.LM29:
+ 296 0060 0E94 0000 		call sendbyte
+  65:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c ****     if (1==size) {
+ 298               	.LM30:
+ 299 0064 81E0      		ldi r24,lo8(1)
+ 300 0066 F816      		cp r15,r24
+ 301 0068 01F0      		breq .L12
+ 302 006a E02E      		mov r14,r16
+ 303 006c C02F      		mov r28,r16
+ 304 006e D12F      		mov r29,r17
+ 305 0070 00C0      		rjmp .L13
+ 306               	.L12:
+  66:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c ****         sendbyte(0x55);		//55 is a dummy byte just to clock something out
+ 308               	.LM31:
+ 309 0072 85E5      		ldi r24,lo8(85)
+ 310 0074 0E94 0000 		call sendbyte
+  67:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c ****        *destination = SPDR;
+ 312               	.LM32:
+ 313 0078 8EB5      		in r24,0x2e
+ 314 007a F801      		movw r30,r16
+ 315 007c 8083      		st Z,r24
+  68:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c ****         goto regreadbail;            //if it's only a single-byte read then read the reg and bail.
+ 317               	.LM33:
+ 318 007e 00C0      		rjmp .L14
+ 319               	.L13:
+ 320 0080 8C2F      		mov r24,r28
+ 321 0082 8E19      		sub r24,r14
+ 322               	.LBB6:
+  69:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c ****     }
+  70:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c ****     for (u8 i = 0; i < size; i++){
+ 324               	.LM34:
+ 325 0084 8F15      		cp r24,r15
+ 326 0086 00F4      		brsh .L14
+  71:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c ****         sendbyte(0x55);
+ 328               	.LM35:
+ 329 0088 85E5      		ldi r24,lo8(85)
+ 330 008a 0E94 0000 		call sendbyte
+  72:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c ****     destination[i] = SPDR;
+ 332               	.LM36:
+ 333 008e 8EB5      		in r24,0x2e
+ 334 0090 8993      		st Y+,r24
+ 335 0092 00C0      		rjmp .L13
+ 336               	.L14:
+ 337               	.LBE6:
+  73:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+  74:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** regreadbail:    //if it's a single-byte read then come here after reading it.
+  75:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** set_csn;
+ 339               	.LM37:
+ 340 0094 5F9A      		sbi 0xb,7
+ 341               	/* epilogue start */
+  76:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+ 343               	.LM38:
+ 344 0096 DF91      		pop r29
+ 345 0098 CF91      		pop r28
+ 346 009a 1F91      		pop r17
+ 347 009c 0F91      		pop r16
+ 348 009e FF90      		pop r15
+ 349 00a0 EF90      		pop r14
+ 350 00a2 0895      		ret
+ 352               	.Lscope8:
+ 356               	.global	writeRegMult
+ 358               	writeRegMult:
+  77:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+  78:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+  79:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+  80:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** /*    Here Register is the 5-bit address of the register which is defined in other library, but in 
+  81:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+  82:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** void writeRegMult(u8 Register, u8 * source, u8 size){
+ 360               	.LM39:
+ 361               	.LFBB9:
+ 362 00a4 EF92      		push r14
+ 363 00a6 FF92      		push r15
+ 364 00a8 0F93      		push r16
+ 365 00aa 1F93      		push r17
+ 366 00ac CF93      		push r28
+ 367 00ae DF93      		push r29
+ 368 00b0 00D0      		rcall .
+ 369 00b2 CDB7      		in r28,__SP_L__
+ 370 00b4 DEB7      		in r29,__SP_H__
+ 371               	/* prologue: function */
+ 372               	/* frame size = 2 */
+ 373               	/* stack size = 8 */
+ 374               	.L__stack_usage = 8
+ 375 00b6 142F      		mov r17,r20
+  83:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** clr_csn;
+ 377               	.LM40:
+ 378 00b8 5F98      		cbi 0xb,7
+  84:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** sendbyte((Register | 0x20));
+ 380               	.LM41:
+ 381 00ba 8062      		ori r24,lo8(32)
+ 382 00bc 6983      		std Y+1,r22
+ 383 00be 7A83      		std Y+2,r23
+ 384 00c0 0E94 0000 		call sendbyte
+ 385 00c4 6981      		ldd r22,Y+1
+ 386 00c6 062F      		mov r16,r22
+ 387               	.LBB7:
+  85:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c ****     for (u8 i = 0; i < size; i++){
+ 389               	.LM42:
+ 390 00c8 E62E      		mov r14,r22
+ 391 00ca 7A81      		ldd r23,Y+2
+ 392 00cc F72E      		mov r15,r23
+ 393               	.L17:
+ 394 00ce 8E2D      		mov r24,r14
+ 395 00d0 801B      		sub r24,r16
+ 397               	.LM43:
+ 398 00d2 8117      		cp r24,r17
+ 399 00d4 00F4      		brsh .L19
+  86:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c ****         sendbyte(source[i]);
+ 401               	.LM44:
+ 402 00d6 F701      		movw r30,r14
+ 403 00d8 8191      		ld r24,Z+
+ 404 00da 7F01      		movw r14,r30
+ 405 00dc 0E94 0000 		call sendbyte
+ 406 00e0 00C0      		rjmp .L17
+ 407               	.L19:
+ 408               	.LBE7:
+  87:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c ****     }
+  88:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c ****     set_csn;
+ 410               	.LM45:
+ 411 00e2 5F9A      		sbi 0xb,7
+ 412               	/* epilogue start */
+  89:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+ 414               	.LM46:
+ 415 00e4 0F90      		pop __tmp_reg__
+ 416 00e6 0F90      		pop __tmp_reg__
+ 417 00e8 DF91      		pop r29
+ 418 00ea CF91      		pop r28
+ 419 00ec 1F91      		pop r17
+ 420 00ee 0F91      		pop r16
+ 421 00f0 FF90      		pop r15
+ 422 00f2 EF90      		pop r14
+ 423 00f4 0895      		ret
+ 425               	.Lscope9:
+ 429               	.global	writeRegSing
+ 431               	writeRegSing:
+  90:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+  91:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+  92:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** void writeRegSing(u8 Register, u8 data){
+ 433               	.LM47:
+ 434               	.LFBB10:
+ 435 00f6 CF93      		push r28
+ 436 00f8 DF93      		push r29
+ 437 00fa 1F92      		push __zero_reg__
+ 438 00fc CDB7      		in r28,__SP_L__
+ 439 00fe DEB7      		in r29,__SP_H__
+ 440               	/* prologue: function */
+ 441               	/* frame size = 1 */
+ 442               	/* stack size = 3 */
+ 443               	.L__stack_usage = 3
+  93:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	clr_csn;
+ 445               	.LM48:
+ 446 0100 5F98      		cbi 0xb,7
+  94:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	sendbyte((Register | 0x20));	//'OR register address with 0x20 to indicate it's a write command
+ 448               	.LM49:
+ 449 0102 8062      		ori r24,lo8(32)
+ 450 0104 6983      		std Y+1,r22
+ 451 0106 0E94 0000 		call sendbyte
+  95:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	sendbyte(data);
+ 453               	.LM50:
+ 454 010a 6981      		ldd r22,Y+1
+ 455 010c 862F      		mov r24,r22
+ 456 010e 0E94 0000 		call sendbyte
+  96:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	set_csn;
+ 458               	.LM51:
+ 459 0112 5F9A      		sbi 0xb,7
+ 460               	/* epilogue start */
+  97:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+ 462               	.LM52:
+ 463 0114 0F90      		pop __tmp_reg__
+ 464 0116 DF91      		pop r29
+ 465 0118 CF91      		pop r28
+ 466 011a 0895      		ret
+ 468               	.Lscope10:
+ 471               	.global	check_Flag
+ 473               	check_Flag:
+  98:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+  99:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 100:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 101:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 102:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** //Check and Clear specific flags in the Status Register for RX_DR, TX_DS, and MAX_RT
+ 103:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 104:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** u8	check_Flag (u8 flag){
+ 475               	.LM53:
+ 476               	.LFBB11:
+ 477 011c CF93      		push r28
+ 478               	/* prologue: function */
+ 479               	/* frame size = 0 */
+ 480               	/* stack size = 1 */
+ 481               	.L__stack_usage = 1
+ 482 011e C82F      		mov r28,r24
+ 105:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** u8	temp = readStatus();
+ 484               	.LM54:
+ 485 0120 0E94 0000 		call readStatus
+ 106:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** if (temp & flag){
+ 487               	.LM55:
+ 488 0124 C823      		and r28,r24
+ 489 0126 81E0      		ldi r24,lo8(1)
+ 490 0128 01F4      		brne .L22
+ 491 012a 80E0      		ldi r24,0
+ 492               	.L22:
+ 493               	/* epilogue start */
+ 107:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	return 1;
+ 108:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }else{
+ 109:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	return 0;
+ 110:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	}
+ 111:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+ 495               	.LM56:
+ 496 012c CF91      		pop r28
+ 497 012e 0895      		ret
+ 499               	.Lscope11:
+ 502               	.global	clear_Flag
+ 504               	clear_Flag:
+ 112:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 113:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** void clear_Flag	(u8 flag){
+ 506               	.LM57:
+ 507               	.LFBB12:
+ 508 0130 CF93      		push r28
+ 509 0132 DF93      		push r29
+ 510 0134 1F92      		push __zero_reg__
+ 511 0136 CDB7      		in r28,__SP_L__
+ 512 0138 DEB7      		in r29,__SP_H__
+ 513               	/* prologue: function */
+ 514               	/* frame size = 1 */
+ 515               	/* stack size = 3 */
+ 516               	.L__stack_usage = 3
+ 114:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** u8 temp = readStatus();
+ 518               	.LM58:
+ 519 013a 8983      		std Y+1,r24
+ 520 013c 0E94 0000 		call readStatus
+ 115:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** temp |= flag;
+ 116:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** writeRegSing(STATUS,flag);	
+ 522               	.LM59:
+ 523 0140 6981      		ldd r22,Y+1
+ 524 0142 87E0      		ldi r24,lo8(7)
+ 525               	/* epilogue start */
+ 117:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+ 527               	.LM60:
+ 528 0144 0F90      		pop __tmp_reg__
+ 529 0146 DF91      		pop r29
+ 530 0148 CF91      		pop r28
+ 116:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+ 532               	.LM61:
+ 533 014a 0C94 0000 		jmp writeRegSing
+ 535               	.Lscope12:
+ 539               	.global	receivePayLoad
+ 541               	receivePayLoad:
+ 118:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 119:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 120:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 121:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 122:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 123:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 124:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** /* following functions are for sending/retrieving payloads from the NRF.  */
+ 125:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 126:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 127:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** void sendPayLoad(u8 TXorAWK, u8 * plsource, u8 size){
+ 128:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** flushTx();		//clear the buffer first
+ 129:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** clr_csn;
+ 130:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** sendbyte(TXorAWK);		//this will be either the command to W_TX_PAYLOAD (0xA0) or the command to W_AC
+ 131:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** for (int i = 0; i < size; i++){
+ 132:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	sendbyte(plsource[i]);
+ 133:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+ 134:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** set_csn;
+ 135:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** if(TXorAWK == W_TX_PAYLOAD){	//if I'm here because of writing a PTX payload and not an awk-pak payl
+ 136:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** ten_uS_ce_Pulse();	//10uS pulse on Chip Enable to make it transmit.  Will probably work this into T
+ 137:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+ 138:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+ 139:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 140:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 141:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** void receivePayLoad(u8 * payload_dest, u8 size){
+ 543               	.LM62:
+ 544               	.LFBB13:
+ 545 014e EF92      		push r14
+ 546 0150 FF92      		push r15
+ 547 0152 0F93      		push r16
+ 548 0154 1F93      		push r17
+ 549 0156 CF93      		push r28
+ 550 0158 DF93      		push r29
+ 551               	/* prologue: function */
+ 552               	/* frame size = 0 */
+ 553               	/* stack size = 6 */
+ 554               	.L__stack_usage = 6
+ 555 015a 7C01      		movw r14,r24
+ 556 015c C62F      		mov r28,r22
+ 142:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	clr_csn;
+ 558               	.LM63:
+ 559 015e 5F98      		cbi 0xb,7
+ 143:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	sendbyte(R_RX_PAYLOAD);	//command to receive paylaod
+ 561               	.LM64:
+ 562 0160 81E6      		ldi r24,lo8(97)
+ 563 0162 0E94 0000 		call sendbyte
+ 564               	.LBB8:
+ 144:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	for(int i =0; i < size; i ++){
+ 566               	.LM65:
+ 567 0166 8701      		movw r16,r14
+ 568 0168 D0E0      		ldi r29,0
+ 569               	.L25:
+ 570 016a C801      		movw r24,r16
+ 571 016c 8E19      		sub r24,r14
+ 572 016e 9F09      		sbc r25,r15
+ 574               	.LM66:
+ 575 0170 8C17      		cp r24,r28
+ 576 0172 9D07      		cpc r25,r29
+ 577 0174 04F4      		brge .L27
+ 145:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 		sendbyte(0x55);	//dummy byte just to send something
+ 579               	.LM67:
+ 580 0176 85E5      		ldi r24,lo8(85)
+ 581 0178 0E94 0000 		call sendbyte
+ 146:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 		payload_dest[i] = SPDR;
+ 583               	.LM68:
+ 584 017c 8EB5      		in r24,0x2e
+ 585 017e F801      		movw r30,r16
+ 586 0180 8193      		st Z+,r24
+ 587 0182 8F01      		movw r16,r30
+ 588 0184 00C0      		rjmp .L25
+ 589               	.L27:
+ 590               	.LBE8:
+ 147:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	}
+ 148:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	set_csn;
+ 592               	.LM69:
+ 593 0186 5F9A      		sbi 0xb,7
+ 594               	/* epilogue start */
+ 149:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+ 596               	.LM70:
+ 597 0188 DF91      		pop r29
+ 598 018a CF91      		pop r28
+ 599 018c 1F91      		pop r17
+ 600 018e 0F91      		pop r16
+ 601 0190 FF90      		pop r15
+ 602 0192 EF90      		pop r14
+ 603 0194 0895      		ret
+ 605               	.Lscope13:
+ 608               	.global	get_RX_Data
+ 610               	get_RX_Data:
+ 150:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 151:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 152:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 153:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** u8 get_RX_Data(u8 *destination){
+ 612               	.LM71:
+ 613               	.LFBB14:
+ 614 0196 CF93      		push r28
+ 615 0198 DF93      		push r29
+ 616               	/* prologue: function */
+ 617               	/* frame size = 0 */
+ 618               	/* stack size = 2 */
+ 619               	.L__stack_usage = 2
+ 620 019a EC01      		movw r28,r24
+ 154:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	u8 width = readRXWidth();
+ 622               	.LM72:
+ 623 019c 0E94 0000 		call readRXWidth
+ 155:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	//TODO: If Width is above 32(MAX FOR CHIP) or above whatever max I set in software, flag an error
+ 156:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	receivePayLoad(destination, width);
+ 625               	.LM73:
+ 626 01a0 682F      		mov r22,r24
+ 627 01a2 CE01      		movw r24,r28
+ 628 01a4 0E94 0000 		call receivePayLoad
+ 157:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	flushRx();
+ 630               	.LM74:
+ 631 01a8 0E94 0000 		call flushRx
+ 158:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	clear_Flag(RX_DR);
+ 633               	.LM75:
+ 634 01ac 80E4      		ldi r24,lo8(64)
+ 635 01ae 0E94 0000 		call clear_Flag
+ 159:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	return 1;	//will use this as a flag to say that there's fresh data, will kill flag after reading d
+ 160:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+ 637               	.LM76:
+ 638 01b2 81E0      		ldi r24,lo8(1)
+ 639               	/* epilogue start */
+ 640 01b4 DF91      		pop r29
+ 641 01b6 CF91      		pop r28
+ 642 01b8 0895      		ret
+ 647               	.Lscope14:
+ 649               	.global	powerUp
+ 651               	powerUp:
+ 161:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 162:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 163:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 164:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 165:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** void powerUp (void){
+ 653               	.LM77:
+ 654               	.LFBB15:
+ 655               	/* prologue: function */
+ 656               	/* frame size = 0 */
+ 657               	/* stack size = 0 */
+ 658               	.L__stack_usage = 0
+ 166:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	CFGValues |= 0x02;
+ 660               	.LM78:
+ 661 01ba 6091 0000 		lds r22,CFGValues
+ 662 01be 6260      		ori r22,lo8(2)
+ 663 01c0 6093 0000 		sts CFGValues,r22
+ 167:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	writeRegSing(CONFIG, CFGValues);
+ 665               	.LM79:
+ 666 01c4 80E0      		ldi r24,0
+ 667 01c6 0E94 0000 		call writeRegSing
+ 668               	.LBB9:
+ 669               	.LBB10:
+ 671               	.Ltext1:
+   1:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** /* Copyright (c) 2002, Marek Michalkiewicz
+   2:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    Copyright (c) 2004,2005,2007 Joerg Wunsch
+   3:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    Copyright (c) 2007  Florin-Viorel Petrov
+   4:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    All rights reserved.
+   5:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+   6:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    Redistribution and use in source and binary forms, with or without
+   7:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    modification, are permitted provided that the following conditions are met:
+   8:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+   9:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    * Redistributions of source code must retain the above copyright
+  10:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****      notice, this list of conditions and the following disclaimer.
+  11:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+  12:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    * Redistributions in binary form must reproduce the above copyright
+  13:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****      notice, this list of conditions and the following disclaimer in
+  14:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****      the documentation and/or other materials provided with the
+  15:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****      distribution.
+  16:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+  17:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    * Neither the name of the copyright holders nor the names of
+  18:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****      contributors may be used to endorse or promote products derived
+  19:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****      from this software without specific prior written permission.
+  20:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+  21:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  22:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  23:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  24:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  25:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  26:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  27:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  28:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  29:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  30:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  31:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****   POSSIBILITY OF SUCH DAMAGE. */
+  32:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+  33:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** /* $Id: delay.h.in 2385 2013-05-03 13:14:20Z joerg_wunsch $ */
+  34:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+  35:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** #ifndef _UTIL_DELAY_H_
+  36:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** #define _UTIL_DELAY_H_ 1
+  37:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+  38:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** #ifndef __HAS_DELAY_CYCLES
+  39:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** #define __HAS_DELAY_CYCLES 1
+  40:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** #endif
+  41:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+  42:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** #include <inttypes.h>
+  43:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** #include <util/delay_basic.h>
+  44:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** #include <math.h>
+  45:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+  46:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** /** \file */
+  47:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** /** \defgroup util_delay <util/delay.h>: Convenience functions for busy-wait delay loops
+  48:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     \code
+  49:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     #define F_CPU 1000000UL  // 1 MHz
+  50:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     //#define F_CPU 14.7456E6
+  51:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     #include <util/delay.h>
+  52:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     \endcode
+  53:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+  54:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     \note As an alternative method, it is possible to pass the
+  55:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     F_CPU macro down to the compiler from the Makefile.
+  56:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     Obviously, in that case, no \c \#define statement should be
+  57:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     used.
+  58:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+  59:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     The functions in this header file are wrappers around the basic
+  60:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     busy-wait functions from <util/delay_basic.h>.  They are meant as
+  61:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     convenience functions where actual time values can be specified
+  62:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     rather than a number of cycles to wait for.  The idea behind is
+  63:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     that compile-time constant expressions will be eliminated by
+  64:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     compiler optimization so floating-point expressions can be used
+  65:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     to calculate the number of delay cycles needed based on the CPU
+  66:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     frequency passed by the macro F_CPU.
+  67:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+  68:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     \note In order for these functions to work as intended, compiler
+  69:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     optimizations <em>must</em> be enabled, and the delay time
+  70:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     <em>must</em> be an expression that is a known constant at
+  71:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     compile-time.  If these requirements are not met, the resulting
+  72:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     delay will be much longer (and basically unpredictable), and
+  73:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     applications that otherwise do not use floating-point calculations
+  74:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     will experience severe code bloat by the floating-point library
+  75:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     routines linked into the application.
+  76:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+  77:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     The functions available allow the specification of microsecond, and
+  78:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     millisecond delays directly, using the application-supplied macro
+  79:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     F_CPU as the CPU clock frequency (in Hertz).
+  80:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+  81:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** */
+  82:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+  83:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** #if !defined(__DOXYGEN__)
+  84:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** static inline void _delay_us(double __us) __attribute__((always_inline));
+  85:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** static inline void _delay_ms(double __ms) __attribute__((always_inline));
+  86:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** #endif
+  87:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+  88:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** #ifndef F_CPU
+  89:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** /* prevent compiler error by supplying a default */
+  90:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** # warning "F_CPU not defined for <util/delay.h>"
+  91:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** # define F_CPU 1000000UL
+  92:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** #endif
+  93:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+  94:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** #ifndef __OPTIMIZE__
+  95:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** # warning "Compiler optimizations disabled; functions from <util/delay.h> won't work as designed"
+  96:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** #endif
+  97:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+  98:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** #if __HAS_DELAY_CYCLES && defined(__OPTIMIZE__) && \
+  99:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****   !defined(__DELAY_BACKWARD_COMPATIBLE__) &&	   \
+ 100:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****   __STDC_HOSTED__
+ 101:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** #  include <math.h>
+ 102:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** #endif
+ 103:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 104:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** /**
+ 105:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    \ingroup util_delay
+ 106:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 107:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    Perform a delay of \c __ms milliseconds, using _delay_loop_2().
+ 108:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 109:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    The macro F_CPU is supposed to be defined to a
+ 110:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    constant defining the CPU clock frequency (in Hertz).
+ 111:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 112:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    The maximal possible delay is 262.14 ms / F_CPU in MHz.
+ 113:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 114:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    When the user request delay which exceed the maximum possible one,
+ 115:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    _delay_ms() provides a decreased resolution functionality. In this
+ 116:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    mode _delay_ms() will work with a resolution of 1/10 ms, providing
+ 117:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    delays up to 6.5535 seconds (independent from CPU frequency).  The
+ 118:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    user will not be informed about decreased resolution.
+ 119:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 120:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    If the avr-gcc toolchain has __builtin_avr_delay_cycles(unsigned long)
+ 121:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    support, maximal possible delay is 4294967.295 ms/ F_CPU in MHz. For
+ 122:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    values greater than the maximal possible delay, overflows results in
+ 123:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    no delay i.e., 0ms.
+ 124:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 125:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    Conversion of __us into clock cycles may not always result in integer.
+ 126:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    By default, the clock cycles rounded up to next integer. This ensures that
+ 127:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    the user gets atleast __us microseconds of delay.
+ 128:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 129:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    Alternatively, user can define __DELAY_ROUND_DOWN__ and __DELAY_ROUND_CLOSEST__
+ 130:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    to round down and round to closest integer.
+ 131:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 132:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    Note: The new implementation of _delay_ms(double __ms) with 
+ 133:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     __builtin_avr_delay_cycles(unsigned long) support is not backward compatible. 
+ 134:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    User can define __DELAY_BACKWARD_COMPATIBLE__ to get a backward compatible delay.
+ 135:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    Also, the backward compatible
+ 136:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    algorithm will be chosen if the code is compiled in a <em>freestanding
+ 137:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    environment</em> (GCC option \c -ffreestanding), as the math functions
+ 138:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    required for rounding are not available to the compiler then.
+ 139:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 140:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****  */
+ 141:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** void
+ 142:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** _delay_ms(double __ms)
+ 143:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** {
+ 144:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	double __tmp ; 
+ 145:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** #if __HAS_DELAY_CYCLES && defined(__OPTIMIZE__) && \
+ 146:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****   !defined(__DELAY_BACKWARD_COMPATIBLE__) &&	   \
+ 147:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****   __STDC_HOSTED__
+ 148:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	uint32_t __ticks_dc;
+ 149:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	extern void __builtin_avr_delay_cycles(unsigned long);
+ 150:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	__tmp = ((F_CPU) / 1e3) * __ms;
+ 151:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 152:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	#if defined(__DELAY_ROUND_DOWN__)
+ 153:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 		__ticks_dc = (uint32_t)fabs(__tmp);
+ 154:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 155:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	#elif defined(__DELAY_ROUND_CLOSEST__)
+ 156:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 		__ticks_dc = (uint32_t)(fabs(__tmp)+0.5);
+ 157:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 158:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	#else
+ 159:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 		//round up by default
+ 160:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+ 161:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	#endif
+ 162:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 163:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	__builtin_avr_delay_cycles(__ticks_dc);
+ 673               	.LM80:
+ 674 01ca 8FE0      		ldi r24,lo8(9999)
+ 675 01cc 97E2      		ldi r25,hi8(9999)
+ 676 01ce 0197      		1: sbiw r24,1
+ 677 01d0 01F4      		brne 1b
+ 678 01d2 00C0      		rjmp .
+ 679 01d4 0000      		nop
+ 680 01d6 0895      		ret
+ 681               	.LBE10:
+ 682               	.LBE9:
+ 684               	.Lscope15:
+ 686               	.global	powerDown
+ 688               	powerDown:
+ 690               	.Ltext2:
+ 168:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	_delay_ms(5);	//a bit of a delay for this thing to settle down before trying to send data.
+ 169:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+ 170:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 171:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** void powerDown(void){
+ 692               	.LM81:
+ 693               	.LFBB16:
+ 694               	/* prologue: function */
+ 695               	/* frame size = 0 */
+ 696               	/* stack size = 0 */
+ 697               	.L__stack_usage = 0
+ 172:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	CFGValues &= ~(0x02);
+ 699               	.LM82:
+ 700 01d8 6091 0000 		lds r22,CFGValues
+ 701 01dc 6D7F      		andi r22,lo8(-3)
+ 702 01de 6093 0000 		sts CFGValues,r22
+ 173:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	writeRegSing(CONFIG, CFGValues);
+ 704               	.LM83:
+ 705 01e2 80E0      		ldi r24,0
+ 706 01e4 0C94 0000 		jmp writeRegSing
+ 708               	.Lscope16:
+ 710               	.global	ten_uS_ce_Pulse
+ 712               	ten_uS_ce_Pulse:
+ 174:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+ 175:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 176:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 177:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** void ten_uS_ce_Pulse(void){
+ 714               	.LM84:
+ 715               	.LFBB17:
+ 716               	/* prologue: function */
+ 717               	/* frame size = 0 */
+ 718               	/* stack size = 0 */
+ 719               	.L__stack_usage = 0
+ 178:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	set_ce;
+ 721               	.LM85:
+ 722 01e8 289A      		sbi 0x5,0
+ 723               	.LBB11:
+ 724               	.LBB12:
+ 726               	.Ltext3:
+ 164:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 165:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** #else
+ 166:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	uint16_t __ticks;
+ 167:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	__tmp = ((F_CPU) / 4e3) * __ms;
+ 168:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	if (__tmp < 1.0)
+ 169:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 		__ticks = 1;
+ 170:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	else if (__tmp > 65535)
+ 171:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	{
+ 172:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 		//	__ticks = requested delay in 1/10 ms
+ 173:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 		__ticks = (uint16_t) (__ms * 10.0);
+ 174:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 		while(__ticks)
+ 175:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 		{
+ 176:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 			// wait 1/10 ms
+ 177:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 			_delay_loop_2(((F_CPU) / 4e3) / 10);
+ 178:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 			__ticks --;
+ 179:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 		}
+ 180:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 		return;
+ 181:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	}
+ 182:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	else
+ 183:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 		__ticks = (uint16_t)__tmp;
+ 184:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	_delay_loop_2(__ticks);
+ 185:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** #endif
+ 186:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** }
+ 187:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 188:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** /**
+ 189:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    \ingroup util_delay
+ 190:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 191:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    Perform a delay of \c __us microseconds, using _delay_loop_1().
+ 192:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 193:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    The macro F_CPU is supposed to be defined to a
+ 194:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    constant defining the CPU clock frequency (in Hertz).
+ 195:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 196:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    The maximal possible delay is 768 us / F_CPU in MHz.
+ 197:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 198:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    If the user requests a delay greater than the maximal possible one,
+ 199:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    _delay_us() will automatically call _delay_ms() instead.  The user
+ 200:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    will not be informed about this case.
+ 201:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 202:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    If the avr-gcc toolchain has __builtin_avr_delay_cycles(unsigned long)
+ 203:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    support, maximal possible delay is 4294967.295 us/ F_CPU in MHz. For
+ 204:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    values greater than the maximal possible delay, overflow results in
+ 205:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    no delay i.e., 0us.
+ 206:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****   
+ 207:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    Conversion of __us into clock cycles may not always result in integer.
+ 208:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    By default, the clock cycles rounded up to next integer. This ensures that
+ 209:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    the user gets atleast __us microseconds of delay.
+ 210:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 211:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    Alternatively, user can define __DELAY_ROUND_DOWN__ and __DELAY_ROUND_CLOSEST__
+ 212:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    to round down and round to closest integer.
+ 213:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****  
+ 214:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    Note: The new implementation of _delay_us(double __us) with 
+ 215:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****     __builtin_avr_delay_cycles(unsigned long) support is not backward compatible.
+ 216:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    User can define __DELAY_BACKWARD_COMPATIBLE__ to get a backward compatible delay.
+ 217:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    Also, the backward compatible
+ 218:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    algorithm will be chosen if the code is compiled in a <em>freestanding
+ 219:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    environment</em> (GCC option \c -ffreestanding), as the math functions
+ 220:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****    required for rounding are not available to the compiler then.
+ 221:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 222:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****  */
+ 223:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** void
+ 224:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** _delay_us(double __us)
+ 225:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** {
+ 226:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	double __tmp ; 
+ 227:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** #if __HAS_DELAY_CYCLES && defined(__OPTIMIZE__) && \
+ 228:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****   !defined(__DELAY_BACKWARD_COMPATIBLE__) &&	   \
+ 229:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h ****   __STDC_HOSTED__
+ 230:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	uint32_t __ticks_dc;
+ 231:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	extern void __builtin_avr_delay_cycles(unsigned long);
+ 232:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	__tmp = ((F_CPU) / 1e6) * __us;
+ 233:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 234:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	#if defined(__DELAY_ROUND_DOWN__)
+ 235:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 		__ticks_dc = (uint32_t)fabs(__tmp);
+ 236:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 237:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	#elif defined(__DELAY_ROUND_CLOSEST__)
+ 238:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 		__ticks_dc = (uint32_t)(fabs(__tmp)+0.5);
+ 239:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 240:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	#else
+ 241:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 		//round up by default
+ 242:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+ 243:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	#endif
+ 244:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 
+ 245:/usr/local/Cellar/avr-gcc/4.9.3/avr/include/util/delay.h **** 	__builtin_avr_delay_cycles(__ticks_dc);
+ 728               	.LM86:
+ 729 01ea 8DE1      		ldi r24,lo8(29)
+ 730 01ec 8A95      		1: dec r24
+ 731 01ee 01F4      		brne 1b
+ 732 01f0 0000      		nop
+ 733               	.LBE12:
+ 734               	.LBE11:
+ 736               	.Ltext4:
+ 179:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	_delay_us(11);	//yeah, it's eleven, just to be safe
+ 180:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	clr_ce;
+ 738               	.LM87:
+ 739 01f2 2898      		cbi 0x5,0
+ 740 01f4 0895      		ret
+ 742               	.Lscope17:
+ 747               	.global	sendPayLoad
+ 749               	sendPayLoad:
+ 127:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** flushTx();		//clear the buffer first
+ 751               	.LM88:
+ 752               	.LFBB18:
+ 753 01f6 CF92      		push r12
+ 754 01f8 DF92      		push r13
+ 755 01fa FF92      		push r15
+ 756 01fc 0F93      		push r16
+ 757 01fe 1F93      		push r17
+ 758 0200 CF93      		push r28
+ 759 0202 DF93      		push r29
+ 760               	/* prologue: function */
+ 761               	/* frame size = 0 */
+ 762               	/* stack size = 7 */
+ 763               	.L__stack_usage = 7
+ 764 0204 F82E      		mov r15,r24
+ 765 0206 6B01      		movw r12,r22
+ 766 0208 C42F      		mov r28,r20
+ 128:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** clr_csn;
+ 768               	.LM89:
+ 769 020a 0E94 0000 		call flushTx
+ 129:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** sendbyte(TXorAWK);		//this will be either the command to W_TX_PAYLOAD (0xA0) or the command to W_AC
+ 771               	.LM90:
+ 772 020e 5F98      		cbi 0xb,7
+ 130:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** for (int i = 0; i < size; i++){
+ 774               	.LM91:
+ 775 0210 8F2D      		mov r24,r15
+ 776 0212 0E94 0000 		call sendbyte
+ 777               	.LBB13:
+ 131:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	sendbyte(plsource[i]);
+ 779               	.LM92:
+ 780 0216 8601      		movw r16,r12
+ 781 0218 D0E0      		ldi r29,0
+ 782               	.L33:
+ 783 021a C801      		movw r24,r16
+ 784 021c 8C19      		sub r24,r12
+ 785 021e 9D09      		sbc r25,r13
+ 131:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 	sendbyte(plsource[i]);
+ 787               	.LM93:
+ 788 0220 8C17      		cp r24,r28
+ 789 0222 9D07      		cpc r25,r29
+ 790 0224 04F4      		brge .L36
+ 132:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+ 792               	.LM94:
+ 793 0226 F801      		movw r30,r16
+ 794 0228 8191      		ld r24,Z+
+ 795 022a 8F01      		movw r16,r30
+ 796 022c 0E94 0000 		call sendbyte
+ 797 0230 00C0      		rjmp .L33
+ 798               	.L36:
+ 799               	.LBE13:
+ 134:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** if(TXorAWK == W_TX_PAYLOAD){	//if I'm here because of writing a PTX payload and not an awk-pak payl
+ 801               	.LM95:
+ 802 0232 5F9A      		sbi 0xb,7
+ 135:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** ten_uS_ce_Pulse();	//10uS pulse on Chip Enable to make it transmit.  Will probably work this into T
+ 804               	.LM96:
+ 805 0234 F0EA      		ldi r31,lo8(-96)
+ 806 0236 FF12      		cpse r15,r31
+ 807 0238 00C0      		rjmp .L32
+ 808               	/* epilogue start */
+ 138:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 810               	.LM97:
+ 811 023a DF91      		pop r29
+ 812 023c CF91      		pop r28
+ 813 023e 1F91      		pop r17
+ 814 0240 0F91      		pop r16
+ 815 0242 FF90      		pop r15
+ 816 0244 DF90      		pop r13
+ 817 0246 CF90      		pop r12
+ 136:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+ 819               	.LM98:
+ 820 0248 0C94 0000 		jmp ten_uS_ce_Pulse
+ 821               	.L32:
+ 822               	/* epilogue start */
+ 138:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 824               	.LM99:
+ 825 024c DF91      		pop r29
+ 826 024e CF91      		pop r28
+ 827 0250 1F91      		pop r17
+ 828 0252 0F91      		pop r16
+ 829 0254 FF90      		pop r15
+ 830 0256 DF90      		pop r13
+ 831 0258 CF90      		pop r12
+ 832 025a 0895      		ret
+ 834               	.Lscope18:
+ 836               	.global	initialize_NRF
+ 838               	initialize_NRF:
+ 181:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** }
+ 182:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 183:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** 
+ 184:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** void initialize_NRF(void){
+ 840               	.LM100:
+ 841               	.LFBB19:
+ 842               	/* prologue: function */
+ 843               	/* frame size = 0 */
+ 844               	/* stack size = 0 */
+ 845               	.L__stack_usage = 0
+ 185:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** set_csn;
+ 847               	.LM101:
+ 848 025c 5F9A      		sbi 0xb,7
+ 186:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** clr_ce;				//clear Chip Enable in case not already done.
+ 850               	.LM102:
+ 851 025e 2898      		cbi 0x5,0
+ 187:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** writeRegSing(CONFIG, CFGValues);	//initially powered down, CFGValues will be setup for either TX or
+ 853               	.LM103:
+ 854 0260 6091 0000 		lds r22,CFGValues
+ 855 0264 80E0      		ldi r24,0
+ 856 0266 0E94 0000 		call writeRegSing
+ 188:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** writeRegSing(SETUP_RETR, 0x77);	//2mS between retries, 7 total retries
+ 858               	.LM104:
+ 859 026a 67E7      		ldi r22,lo8(119)
+ 860 026c 84E0      		ldi r24,lo8(4)
+ 861 026e 0E94 0000 		call writeRegSing
+ 189:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** writeRegSing(RF_SETUP, 0x06);	//1MBPS, zero TX attenuation
+ 863               	.LM105:
+ 864 0272 66E0      		ldi r22,lo8(6)
+ 865 0274 86E0      		ldi r24,lo8(6)
+ 866 0276 0E94 0000 		call writeRegSing
+ 190:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** writeRegMult(RX_ADDR_P0, Addy, 5);
+ 868               	.LM106:
+ 869 027a 45E0      		ldi r20,lo8(5)
+ 870 027c 60E0      		ldi r22,lo8(Addy)
+ 871 027e 70E0      		ldi r23,hi8(Addy)
+ 872 0280 8AE0      		ldi r24,lo8(10)
+ 873 0282 0E94 0000 		call writeRegMult
+ 191:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** writeRegMult(TX_ADDR, Addy, 5);		//Making TX and RX addresses the same
+ 875               	.LM107:
+ 876 0286 45E0      		ldi r20,lo8(5)
+ 877 0288 60E0      		ldi r22,lo8(Addy)
+ 878 028a 70E0      		ldi r23,hi8(Addy)
+ 879 028c 80E1      		ldi r24,lo8(16)
+ 880 028e 0E94 0000 		call writeRegMult
+ 192:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** writeRegSing(DYNPD, 0x01);	//enable Dynamic Payload for RX Pipe
+ 882               	.LM108:
+ 883 0292 61E0      		ldi r22,lo8(1)
+ 884 0294 8CE1      		ldi r24,lo8(28)
+ 885 0296 0E94 0000 		call writeRegSing
+ 193:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** writeRegSing(FEATURE, 0x06);	//enablying Dynamic Payload Length and Awk-Pac w/Payload
+ 887               	.LM109:
+ 888 029a 66E0      		ldi r22,lo8(6)
+ 889 029c 8DE1      		ldi r24,lo8(29)
+ 890 029e 0E94 0000 		call writeRegSing
+ 194:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** clear_Flag(ALL_FLAG);
+ 892               	.LM110:
+ 893 02a2 80E7      		ldi r24,lo8(112)
+ 894 02a4 0E94 0000 		call clear_Flag
+ 195:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** flushTx();
+ 896               	.LM111:
+ 897 02a8 0E94 0000 		call flushTx
+ 196:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** flushRx();
+ 899               	.LM112:
+ 900 02ac 0E94 0000 		call flushRx
+ 197:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/NRF24_lib.c **** powerUp();		//will probably only want this in the Receiver once things are squared away.  TX will b
+ 902               	.LM113:
+ 903 02b0 0C94 0000 		jmp powerUp
+ 905               	.Lscope19:
+ 906               	.global	Addy
+ 907               		.data
+ 910               	Addy:
+ 911 0000 52        		.byte	82
+ 912 0001 6F        		.byte	111
+ 913 0002 67        		.byte	103
+ 914 0003 65        		.byte	101
+ 915 0004 72        		.byte	114
+ 918               	CFGValues:
+ 919 0005 7C        		.byte	124
+ 922               		.text
+ 924               	.Letext0:
+ 925               		.ident	"GCC: (GNU) 4.9.3"
+ 926               	.global __do_copy_data
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 NRF24_lib.c
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:2      *ABS*:000000000000003e __SP_H__
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:3      *ABS*:000000000000003d __SP_L__
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:4      *ABS*:000000000000003f __SREG__
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:5      *ABS*:0000000000000000 __tmp_reg__
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:6      *ABS*:0000000000000001 __zero_reg__
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:106    .text:0000000000000000 enable_PRX
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:918    .data:0000000000000005 CFGValues
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:126    .text:000000000000000c sendbyte
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:153    .text:0000000000000016 sendcmd
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:176    .text:0000000000000020 readRXWidth
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:209    .text:0000000000000034 flushTx
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:226    .text:000000000000003a flushRx
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:243    .text:0000000000000040 readStatus
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:275    .text:000000000000004e readReg
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:358    .text:00000000000000a4 writeRegMult
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:431    .text:00000000000000f6 writeRegSing
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:473    .text:000000000000011c check_Flag
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:504    .text:0000000000000130 clear_Flag
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:541    .text:000000000000014e receivePayLoad
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:610    .text:0000000000000196 get_RX_Data
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:651    .text:00000000000001ba powerUp
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:688    .text:00000000000001d8 powerDown
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:712    .text:00000000000001e8 ten_uS_ce_Pulse
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:749    .text:00000000000001f6 sendPayLoad
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:838    .text:000000000000025c initialize_NRF
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//cct6gkNq.s:910    .data:0000000000000000 Addy
+
+UNDEFINED SYMBOLS
+__do_copy_data

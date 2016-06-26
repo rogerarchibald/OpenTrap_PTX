@@ -1,0 +1,230 @@
+   1               		.file	"Main.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   8               		.text
+   9               	.Ltext0:
+ 118               		.section	.text.startup,"ax",@progbits
+ 120               	.global	main
+ 122               	main:
+   1:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** /*
+   2:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** main.c
+   3:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c ****  *
+   4:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c ****  * Created: 5/9/15 6:07:47 PM
+   5:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c ****  *  Author: Roger
+   6:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c ****  
+   7:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** This code is currently for board Rev4 which uses an ultrasonic range finder as opposed to the older
+   8:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c ****  
+   9:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c ****  
+  10:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c ****  I'm making a mS timer off of Timer2 and this will crank up some RF comms every 50 mS.  halfway thr
+  11:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c ****  
+  12:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c ****  */
+  13:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  14:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  15:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** #include <util/delay.h>
+  16:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** #include <avr/io.h>
+  17:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** #include <avr/interrupt.h>
+  18:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** #include "NRF24_lib.h"
+  19:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** #include "NRF24defs.h"
+  20:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** #include "ADC.h"
+  21:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** #include "timers.h"
+  22:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** #include "Trap_PTX.h"
+  23:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  24:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  25:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  26:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  27:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  28:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  29:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  30:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  31:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** //use following line if device is acting as PTX or PRX.  //out the define if used as PTX.  Will use
+  32:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** //#define	PRX
+  33:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  34:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  35:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** u8 dataout [] = {0x15, 0x55};	//Here are my 2 bytes, the first is a bitfield and the second is init
+  36:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** u8 packetin = 0;
+  37:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  38:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  39:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  40:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** int main(void)
+  41:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** {
+ 124               	.LM0:
+ 125               	.LFBB1:
+ 126               	/* prologue: function */
+ 127               	/* frame size = 0 */
+ 128               	/* stack size = 0 */
+ 129               	.L__stack_usage = 0
+  42:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 	
+  43:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** DDRD |= 0xFA;	//Chip Select Not, TXData UART, Timer0A outputs, servo power enable, IR input on PD2.
+ 131               	.LM1:
+ 132 0000 8AB1      		in r24,0xa
+ 133 0002 8A6F      		ori r24,lo8(-6)
+ 134 0004 8AB9      		out 0xa,r24
+  44:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** PORTD |= 0x10;	//Setting PortD4 to keep the power turned on.
+ 136               	.LM2:
+ 137 0006 5C9A      		sbi 0xb,4
+  45:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** Timer0_init();	//initialize Timer0 for Servo drive
+ 139               	.LM3:
+ 140 0008 0E94 0000 		call Timer0_init
+  46:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** Timer2_init();	//using this for mS timer/50mS rollover
+ 142               	.LM4:
+ 143 000c 0E94 0000 		call Timer2_init
+  47:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** ADC_Init();
+ 145               	.LM5:
+ 146 0010 0E94 0000 		call ADC_Init
+  48:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** DDRB = 0x2F;		//All of portB = outputs with exception of PB6-7 (XTAL), and PB4 (MISO).
+ 148               	.LM6:
+ 149 0014 8FE2      		ldi r24,lo8(47)
+ 150 0016 84B9      		out 0x4,r24
+  49:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** /*PB0 = Chip Enable, PB1 = LED Out for switcher, PB2 = LED_PWM (also is SS, not used here but can't
+  50:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** //This rev board has an external pullup, want to try that experimentally for now.  PORTB |= 0x02;	/
+  51:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** DDRC |= 0xFF;	//PC0 = OnBoard LEDs, PC3 = TP1
+ 152               	.LM7:
+ 153 0018 87B1      		in r24,0x7
+ 154 001a 8FEF      		ldi r24,lo8(-1)
+ 155 001c 87B9      		out 0x7,r24
+  52:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** PORTC = 0;
+ 157               	.LM8:
+ 158 001e 18B8      		out 0x8,__zero_reg__
+  53:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** //TODO: following line is leftover from PIR, 
+  54:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** EICRA = 0x01;	//configure INT0 to trigger on any logical change, the interrupt will be unmasked in 
+ 160               	.LM9:
+ 161 0020 81E0      		ldi r24,lo8(1)
+ 162 0022 8093 6900 		sts 105,r24
+  55:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** sei();	//enable globals
+ 164               	.LM10:
+ 165               	/* #APP */
+ 166               	 ;  55 "/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultraso
+ 167 0026 7894      		sei
+ 168               	 ;  0 "" 2
+  56:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  57:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  58:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** //initialize SPI on AT328
+  59:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** SPCR = (1<<SPE)|(1<<MSTR);	
+ 170               	.LM11:
+ 171               	/* #NOAPP */
+ 172 0028 80E5      		ldi r24,lo8(80)
+ 173 002a 8CBD      		out 0x2c,r24
+  60:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  61:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** #ifdef PRX
+  62:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** enable_PRX();
+  63:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** #endif
+  64:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  65:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** initialize_NRF();
+ 175               	.LM12:
+ 176 002c 0E94 0000 		call initialize_NRF
+  66:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  67:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c ****     while(1)
+  68:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c ****  {   
+  69:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 	
+  70:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 	if(fifty_stat()){
+  71:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 		
+  72:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 		dataout[0] = fill_TX_bitfield();		//function to populate bitfield after scanning appropriate stuf
+  73:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 		
+  74:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 	
+  75:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 	
+  76:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 	sendPayLoad(W_TX_PAYLOAD, dataout, 2);
+  77:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 	}	//end of where to go if we've detected a 50mS rollover via fifty_stat
+  78:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  79:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 		if(check_Flag(RX_DR)){		//did I detect an awk-pack?
+  80:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 			led1_tog;		//here just want to see if I can see that I've received data and understand the mecha
+ 178               	.LM13:
+ 179 0030 C4E0      		ldi r28,lo8(4)
+ 180               	.L4:
+  70:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 		
+ 182               	.LM14:
+ 183 0032 0E94 0000 		call fifty_stat
+ 184 0036 8823      		tst r24
+ 185 0038 01F0      		breq .L2
+  72:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 		
+ 187               	.LM15:
+ 188 003a 0E94 0000 		call fill_TX_bitfield
+ 189 003e 8093 0000 		sts dataout,r24
+  76:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 	}	//end of where to go if we've detected a 50mS rollover via fifty_stat
+ 191               	.LM16:
+ 192 0042 42E0      		ldi r20,lo8(2)
+ 193 0044 60E0      		ldi r22,lo8(dataout)
+ 194 0046 70E0      		ldi r23,hi8(dataout)
+ 195 0048 80EA      		ldi r24,lo8(-96)
+ 196 004a 0E94 0000 		call sendPayLoad
+ 197               	.L2:
+  79:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 			led1_tog;		//here just want to see if I can see that I've received data and understand the mecha
+ 199               	.LM17:
+ 200 004e 80E4      		ldi r24,lo8(64)
+ 201 0050 0E94 0000 		call check_Flag
+ 202 0054 8823      		tst r24
+ 203 0056 01F0      		breq .L3
+ 205               	.LM18:
+ 206 0058 88B1      		in r24,0x8
+ 207 005a 8C27      		eor r24,r28
+ 208 005c 88B9      		out 0x8,r24
+  81:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 			read_PRX();			
+ 210               	.LM19:
+ 211 005e 0E94 0000 		call read_PRX
+ 212               	.L3:
+  82:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 		}	//end of what to do if an AWK-PAC
+  83:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 		
+  84:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  85:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 
+  86:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 	if(check_Flag(MAX_RT)){	//this is saying that max retries have been sent out without a successful 
+ 214               	.LM20:
+ 215 0062 80E1      		ldi r24,lo8(16)
+ 216 0064 0E94 0000 		call check_Flag
+ 217 0068 8823      		tst r24
+ 218 006a 01F0      		breq .L4
+  87:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 		flushTx();	//clear transmitter FIFO
+ 220               	.LM21:
+ 221 006c 0E94 0000 		call flushTx
+  88:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 		flushRx();
+ 223               	.LM22:
+ 224 0070 0E94 0000 		call flushRx
+  89:/Users/Roger/Library/Mobile Documents/com~apple~CloudDocs/Firmwares/XAVR/smart_trap_ultrasonic/Smart_trap_sonic/Smart_trap_sonic/Main.c **** 		clear_Flag(ALL_FLAG);
+ 226               	.LM23:
+ 227 0074 80E7      		ldi r24,lo8(112)
+ 228 0076 0E94 0000 		call clear_Flag
+ 229 007a 00C0      		rjmp .L4
+ 231               	.Lscope1:
+ 232               	.global	packetin
+ 233               		.section .bss
+ 236               	packetin:
+ 237 0000 00        		.zero	1
+ 238               	.global	dataout
+ 239               		.data
+ 242               	dataout:
+ 243 0000 15        		.byte	21
+ 244 0001 55        		.byte	85
+ 245               		.comm	state_runner,2,1
+ 249               		.text
+ 251               	.Letext0:
+ 252               		.ident	"GCC: (GNU) 4.9.3"
+ 253               	.global __do_copy_data
+ 254               	.global __do_clear_bss
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 Main.c
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccwkuQlF.s:2      *ABS*:000000000000003e __SP_H__
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccwkuQlF.s:3      *ABS*:000000000000003d __SP_L__
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccwkuQlF.s:4      *ABS*:000000000000003f __SREG__
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccwkuQlF.s:5      *ABS*:0000000000000000 __tmp_reg__
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccwkuQlF.s:6      *ABS*:0000000000000001 __zero_reg__
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccwkuQlF.s:122    .text.startup:0000000000000000 main
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccwkuQlF.s:242    .data:0000000000000000 dataout
+/var/folders/5n/sn67s4dx5cj3x2ns4qywc93r0000gn/T//ccwkuQlF.s:236    .bss:0000000000000000 packetin
+                            *COM*:0000000000000002 state_runner
+
+UNDEFINED SYMBOLS
+Timer0_init
+Timer2_init
+ADC_Init
+initialize_NRF
+fifty_stat
+fill_TX_bitfield
+sendPayLoad
+check_Flag
+read_PRX
+flushTx
+flushRx
+clear_Flag
+__do_copy_data
+__do_clear_bss

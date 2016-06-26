@@ -34,7 +34,7 @@ void clear_trap_busy(void);	//this will be called from the Timer0 ISR after fini
 
 void camera_done(void);	//this will be called when teh shutter release has been set and the delay for keeping shutter release down has passed.
 
-u8 checkIR(void);	//check the status of the IR RX and return 0 if it's hi (beam isn't broken) or 0x80 if it's low (
+
 
 
 

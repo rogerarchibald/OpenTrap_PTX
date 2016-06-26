@@ -29,8 +29,9 @@ if (0 == fiftymsroll){
 if(mSecond >= camera_release){
 	camera_done();	//if the mS timer has passed its target value, let the 'Trap_PTX' file know via timesup.
 }
-if(fiftymsroll < 2){
-	T38KOn();
+
+    if(fiftymsroll == 25){
+	make40K();  //start pulsing the ultrsaonic transmitter
 }
 }	//end of mS rollover
 
@@ -95,13 +96,6 @@ void Timer2_init(void) {
 	TCCR2B = 0x03;
 	TIFR2 |= 0X02;	//CLEAR Interrupt flag prior to enabling interrupts (by writing a 1 to it weird huh?)
 	TIMSK2 |= 0X02;	//enable Timer2 Compare Interrupts
-}
-
-//Timer1 38Khz for IR_LED Drive
-void(Timer1_init)(void){
-	ICR1 = 0x69;   //setting top to 105 decimal, 8Mhz/105 = ~77Khz.  Will toggle pin every 2 matchs, so 77/2 = 38K.  
-	TCCR1A = (1<<COM1B0); //set the COM1B0 bit to toggle OC1B on compare match
-	TCCR1B = 0x19; //set no prescaler and set WGM12 for CTC mode
 }
 
 
@@ -184,11 +178,3 @@ void set_trap (void){
 	state_runner = pre_set;	//point to preparing to arm
 }
 
-//Functions to start adn stop the 38K drive
-void T38KOn (void){
-	TCCR1A = (1<<COM1B0); //set the COM1B0 bit to toggle OC1B on compare match
-}
-
-void T38KOff(void){
-		TCCR1A = 0; //set the COM1B0 bit to toggle OC1B on compare match
-}
