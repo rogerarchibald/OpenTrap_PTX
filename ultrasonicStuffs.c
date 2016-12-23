@@ -12,7 +12,7 @@
 
 #include "NRF24_lib.h"
 #include "ultrasonicStuffs.h"
-
+#include "USART.h"
 
 static u8 mode = pulseGen; //pulseGen is for making pulses, Counter is for waiting.  The compare match ISR will use this to determine how to behave
 
@@ -68,7 +68,8 @@ void make40K(void){
      OCR1A = 255;   //8uS period counting to 255 = 2.04mS
      TCCR1B = (1 << CS10) | (1<< CS11); //give me a /64 prescaler
    
-    
+     printByte (OCR1A);
+     printString ("\n");
     
 }
 

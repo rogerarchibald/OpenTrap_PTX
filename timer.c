@@ -13,7 +13,7 @@ static u32 mSecond = 0;		//millisecond counter coming at Timer2 Rollover
 
 static u32 camera_release = 0xFFFFFFFF;	//used by mS ISR to determine how lonw to hold down the camera shutter release.
 static u8	fiftymsroll = 50;	//decremented every millisecond, when it reaches zero is a flag that 50mS have passed
-static u8	fiftyms_flag = 0;	//flag to be set every 5 milliseconds.
+static u8	fiftyms_flag = 0;	//flag to be set every 50 milliseconds.
 static u8 trap_status = 0;		//This flag will be set to 1 after the trap is set and the state machine to set it has gone through all of its stages.
 
 ISR(TIMER2_COMPA_vect) //Will use this ISR to manage mS timer and call functions that need to get ramped/amped every X mS 
@@ -37,7 +37,7 @@ if(mSecond >= camera_release){
 
 
 
-ISR(TIMER0_OVF_vect) //Timer0 will rollover about every 65mS when running, as this is the clock for generating low freq. pulses for hte servo.  Will use this rollover to increment a variable and compare it to a value set in the state machine
+ISR(TIMER0_OVF_vect) //Timer0 will rollover about every 65mS when running, as this is the clock for generating low freq. pulses for the servo.  Will use this rollover to increment a variable and compare it to a value set in the state machine
 {
 	static u8 t0ovf = 0;	//initialize compare variable. This gets incremented every rollover and compared to a target value to advance the state machine.
 	static u8 t0ovf_target =1;		//this is the target variable that gets set every rollover
@@ -113,7 +113,7 @@ u8	fifty_stat(void){
 }
 
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////
 /*State Machine Functions which will be cycled through based on calls from Timer0 rollover interrupt.  The flow is a bit weird but seems to me like the best way to do it.  Initially will go to pre-arm, this is pointed to by the Timer0 init function
 */
 

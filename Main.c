@@ -20,7 +20,7 @@ This code is currently for board Rev4 which uses an ultrasonic range finder as o
 #include "ADC.h"
 #include "timers.h"
 #include "Trap_PTX.h"
-
+#include "USART.h"
 
 
 
@@ -53,7 +53,7 @@ PORTC = 0;
 //TODO: following line is leftover from PIR, 
 EICRA = 0x01;	//configure INT0 to trigger on any logical change, the interrupt will be unmasked in Trap_PTX.c when it's needed.
 sei();	//enable globals
-
+initUSART();
 
 //initialize SPI on AT328
 SPCR = (1<<SPE)|(1<<MSTR);	
