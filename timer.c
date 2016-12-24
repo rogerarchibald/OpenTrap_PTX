@@ -31,7 +31,7 @@ if(mSecond >= camera_release){
 }
 
     if(fiftymsroll == 25){
-	make40K();  //start pulsing the ultrsaonic transmitter
+	enableNoise();  //start pulsing the ultrsaonic transmitter
 }
 }	//end of mS rollover
 

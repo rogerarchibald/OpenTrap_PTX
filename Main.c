@@ -46,7 +46,7 @@ Timer0_init();	//initialize Timer0 for Servo drive
 Timer2_init();	//using this for mS timer/50mS rollover
 ADC_Init();
 DDRB = 0x2F;		//All of portB = outputs with exception of PB6-7 (XTAL), and PB4 (MISO).
-/*PB0 = Chip Enable, PB1 = LED Out for switcher, PB2 = LED_PWM (also is SS, not used here but can't be left floating input), PB3 = MOSI, PB4 = MISO, PB5 = SCK, PB6-7 = oscillator*/
+/*PB0 = Chip Enable, PB1 = LED Out for switcher, PB2 = XMIT-DRV (also is SS, not used here but can't be left floating input), PB3 = MOSI, PB4 = MISO, PB5 = SCK, PB6-7 = oscillator*/
 //This rev board has an external pullup, want to try that experimentally for now.  PORTB |= 0x02;	//setting pullup on PB1 which is the shutter release.
 DDRC |= 0xFF;	//PC0 = OnBoard LEDs, PC3 = TP1
 PORTC = 0;
@@ -54,7 +54,7 @@ PORTC = 0;
 EICRA = 0x01;	//configure INT0 to trigger on any logical change, the interrupt will be unmasked in Trap_PTX.c when it's needed.
 sei();	//enable globals
 initUSART();
-
+    prep4Fire();
 //initialize SPI on AT328
 SPCR = (1<<SPE)|(1<<MSTR);	
 

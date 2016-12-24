@@ -15,16 +15,18 @@
 
 
 //function prototypes
-void make40K(void);	//turn on the 40Khz drive
-void wait4Rebound(void);    //set up timer to cound time until sound bounces back or compare interrupt happens
+void prep4Fire(void);	//set up timer to make 40K signal but don't turn it on.  Will be called at startup and also after getting a sample
+void enableNoise(void);    //enable Timer after it being previously prepped
+void kickTheCan (u8 kickDelay); //set a callback for some point in the future...To either wait for blanking time or set a timeout for listening
 
 
 
 
-//the two modes that the ISR will use to determine if I'm in pulse-making mode or waiting mode
-enum timermodes{
-    pulseGen,
-    Counter
+//the two modes that the ISR will use to determine if I'm in pulse-making mode, blanking-time mode or waiting mode
+enum sonicTrapModes{
+    makeNoise,
+    deadTime,
+    listenMode
 };
 
 
