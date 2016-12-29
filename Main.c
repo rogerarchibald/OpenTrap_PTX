@@ -40,7 +40,7 @@ u8 packetin = 0;
 int main(void)
 {
 	
-DDRD |= 0xFA;	//Chip Select Not, TXData UART, Timer0A outputs, servo power enable, IR input on PD2.  Power_on output on PD4.  Light control on PD3
+DDRD |= 0xFA;	//Chip Select Not, TXData UART, Timer0A outputs, servo power enable, ultrasonic input on PD2.  Power_on output on PD4.  Light control on PD3
 PORTD |= 0x10;	//Setting PortD4 to keep the power turned on.
 Timer0_init();	//initialize Timer0 for Servo drive
 Timer2_init();	//using this for mS timer/50mS rollover
@@ -54,7 +54,7 @@ PORTC = 0;
 EICRA = 0x01;	//configure INT0 to trigger on any logical change, the interrupt will be unmasked in Trap_PTX.c when it's needed.
 sei();	//enable globals
 initUSART();
-    prep4Fire();
+    prep4Fire();    //This is setting up Timer1 for making ultrasonic noise but not yet enabling the transmitter
 //initialize SPI on AT328
 SPCR = (1<<SPE)|(1<<MSTR);	
 

@@ -18,7 +18,7 @@
 void prep4Fire(void);	//set up timer to make 40K signal but don't turn it on.  Will be called at startup and also after getting a sample
 void enableNoise(void);    //enable Timer after it being previously prepped
 void kickTheCan (u8 kickDelay); //set a callback for some point in the future...To either wait for blanking time or set a timeout for listening
-
+void armINT0 (u8 onOrOff);  //arm or disarm INTO based on variable onOrOff which will just be 0/1.
 
 
 

@@ -6,7 +6,15 @@
     
     - 25mS into my 50mS loop, timers.c will call 'enableNoise' which will enable the ouptut and turn on the timer, pulsing the Xducer for ~200uS.  After it's done pulsing, I'll call 'kickTheCan(25) which will give me an interrupt 800uS later.  This will give a suitable blanking delay
  
- at 2' and .5" I saw a delay of 3.68mS from the end of firing to a return...With 22.5" I saw3.32mS....17.5" gave 2.56mS
+ at 24.5" I saw a delay of 3.68mS from the end of firing to a return...With 22.5" I saw3.32mS....17.5" gave 2.56mS
+ 
+    -State Machine has 4 states:
+        -Prepped for Fire: No Timer running, timer is set up to generate firing pulses but no clock is enabled
+        -MakeNoise: Firing transducer for ~200uS
+        -deadTime: An 800uS delay where I'm allowing any direct-coupled signal to subside before listening for a return
+        -listenMode: Here I'll arm INT0 and listen.  From here I'm going to get an interrupt: either INT0 when something bounces back, or Timer1Overflow if the signal is blocked.
+ 
+ 
  
  */
 
@@ -15,6 +23,20 @@
 #include "USART.h"
 
 static u8 ultrasonicMode;	//index my ultrasonic state machine
+volatile u8 sonicDistance;    //This will be the total number of timer ticks since starting firing (32uS/tick) divided by 5.  This is a pretty close approximation to the distance in inches, and close enough for me since it'll prevent me having to go into floating point areas
+
+
+
+
+
+//This will indicate a signal bounced back to the receiver while we were listening...This is the most common outcome because the trap will be empty and the reflector plate is there
+ISR(INT0_vect){
+    armINT0(0); //disable the interrupt
+    prep4Fire();
+    sonicDistance = ((TCNT1+25)/5); //TCNT1 is the current number of 32uS ticks.  25 is the number called by kickTheCan when I finished firing.  Dividing their sum by 5 will get me pretty close (~8% error) to the distance in inches.
+    tog_tp1
+} //end of ISR.
+
 
 
 
@@ -30,23 +52,25 @@ ISR(TIMER1_COMPA_vect){
             if(noisecounter >= 16){	//this will determine how many times to pulse the transmitter 16 transitions = 8 pulses
                 noisecounter = 0;	//reset for next time
                 ultrasonicMode = deadTime;	//need to wait for any directly coupled noise to finish
-                TCCR1A = 0;	//I don't care about outputs from timer here
                 PORTB &= ~(0x04); //make sure that PORTB-2 is low
                 kickTheCan(25);//starting point here. 25 * 32 =800...800/148 =~5.4inches' worth of blanking time.
             }
             break;
             
-        case deadTime:
-            
-        {prep4Fire();
-        tog_tp1}
+        case deadTime:  //this will be the return of 'kickthecan' approx. 800uS after firing completes, where I'm idle to prevent triggering on direct-coupled signal.
+            armINT0(1);
+            kickTheCan(46);
+            ultrasonicMode = listenMode;
+            tog_tp1
             break;
-    /*    TODO: clean up all of the above code and test/make sure that I understand the delays and can get tothis point.
-            Once here, I need to check if the pin is already receiving something and if so, return with minimum(4"???) delay.
-        If I'm not already receiving anything, call 'kickTheCan' to start the timer. This will limit how long I'll be able to
-        listen (via ISR) and also I can check the value of TCNT1 when the receiver does getsomething, and this will be the manner to determine distance
-     
-    */
+  
+            
+        case listenMode: //if I got here it's because of a CTC interrupt while listening, which means that the timer timed out before the signal boucned back.
+            armINT0(0); //disable the interrupt
+            sonicDistance = 18; //while making my listenMode callback from kickTheCan(46) the maximum distance I could detect is 15", so calling this 18 is a sign that we're not ready yet.
+            prep4Fire();
+            tog_tp1
+            break;
                                                                                                                 
 }	//end of switch/Case
 }	//End of ISR
@@ -63,6 +87,7 @@ void prep4Fire (void){
     ultrasonicMode = makeNoise;	//set state machine so ISR knows where to go.
     TIFR1 = (1<<OCF1A);	//clear flag for OCR1A match
     TIMSK1 = (1<<OCIE1A); //enable interrupt
+    printByte(sonicDistance);   //For debugging, get a UART on there to see if I'm calculating these numbers correctly
 }	//end of prep4Fire.
 
 
@@ -87,3 +112,14 @@ void kickTheCan (u8 kickDelay){
     TIFR1 = (1<<OCF1A);	//clear flag for OCR1A match
     TIMSK1 = (1<<OCIE1A); //enable interrupt
 }
+
+
+
+//enable/disable INT0 depending on the variable onOrOff
+void armINT0 (u8 onOrOff){
+    EICRA |= (1 << ISC01); //configure interrupt on falling edge of INT0
+    EIFR |= (1 << INTF0);   //clear the interrupt flag
+    EIMSK = (onOrOff << INT0);  //enable or disable the interrupt based on the argument that's passed
+    
+}
+
