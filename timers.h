@@ -29,7 +29,6 @@
 //////////////////////////////////////////////////////////
 /*Initialization function prototypes*/
 void Timer2_init(void);	//Timer2 will be used for mS timer
-void Timer1_init(void);	//Timer1 will generate 38Khz signal for LED
 void Timer0_init(void);	//Timer0 will drive Servo output for trap.
 
 //prototype function pointer that'll run through the state machine of setting the trap based on Timer0 rollovers.

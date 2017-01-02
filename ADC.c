@@ -34,15 +34,14 @@ void start_ADC_conv (void){
 }
 
 
-//For right now this is returning the left-alligned (upper 8 bits of the 10-bit ADC) 8-bit conversion.  Might just have this return 1 or zero depending on whether or not the value is above my minimum VCC threshold.
+//For right now this is returning the left-alligned (upper 8 bits of the 10-bit ADC) 8-bit conversion.  Just have this return 1(batt low) or 0 (batt good) depending on whether or not the value is above my minimum VCC threshold.
 u8 readADC(void){
 
 	ADCSRA |= 0x10;	//clear interrupt flag
 	if(ADCH > 170){	//170 ~= 6.8V, if I'm above there then I should be good
 		return 0;
 	}
-	return 1;	//TODO modify this function to compare read value to a low-battery threshold and set flag accordingly
-	//return ADCH;
-	}
+	return 1;
+}
 	
 	

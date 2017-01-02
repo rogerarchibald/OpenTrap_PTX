@@ -8,7 +8,7 @@
 #define BAUD  9600                     /* set a safe default baud rate */
 #endif
 
-//#define F_CPU 8000000                                  /* These are defined for convenience */
+#define F_CPU 8000000                                  /* These are defined for convenience */
 #define   USART_HAS_DATA   bit_is_set(UCSR0A, RXC0)
 #define   USART_READY      bit_is_set(UCSR0A, UDRE0)
 
