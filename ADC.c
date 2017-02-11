@@ -6,11 +6,16 @@
  
  
  Want to set up the ADC as 8-bit, will left-align the results and drop the Low register...8-bits is plenty of resolution for my needs here and it's easier to deal with.
- In this first setup I've got a resistor divider on VIN such where Rtop = 100K and Rbottom = 47K so the divide by = /3.12.  7.2Vin/3.12 = 2.3V.  VCC = 3.3V 2.3/3.3 * 256 = 178.
- ***This was written for an older version: going forward I might go to 3V instead of 3.3 which will require a math change
- */ 
+ I'll use VCC as the analog reference so in this case it's 3.3V.  My divider is 715k into 499k for a grand total of a .411 divide-by.  That means my max input voltage is 8V to keep this from exceeding VCC...I could squeeze a little more precision out of this but for now I'm close enough to check a battery.
+
+ So the ultimate math = ((ADCH/255)*3.3)/.411= battery voltage....->ADCH * .0313 = battery voltage.
+ 
+ */
 
 #include "ADC.h"
+#include "USART.h"
+#include "NRF24_lib.h"
+
 
 void ADC_Init(void) {
 	
@@ -34,14 +39,14 @@ void start_ADC_conv (void){
 }
 
 
-//For right now this is returning the left-alligned (upper 8 bits of the 10-bit ADC) 8-bit conversion.  Just have this return 1(batt low) or 0 (batt good) depending on whether or not the value is above my minimum VCC threshold.
+//For right now this is returning the left-alligned (upper 8 bits of the 10-bit ADC) 8-bit conversion.  Will set or clear LED2 based on battery level...below 6.8V I will set it.
 u8 readADC(void){
-
 	ADCSRA |= 0x10;	//clear interrupt flag
-	if(ADCH > 170){	//170 ~= 6.8V, if I'm above there then I should be good
-		return 0;
-	}
-	return 1;
+	if(ADCH > 217){	//217 is roughly 6.8V with my 715k/499k divider)
+        led2_off}else{
+            led2_on
+        }
+	return ADCH;
 }
 	
 	

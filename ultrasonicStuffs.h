@@ -19,7 +19,7 @@ void prep4Fire(void);	//set up timer to make 40K signal but don't turn it on.  W
 void enableNoise(void);    //enable Timer after it being previously prepped
 void kickTheCan (u8 kickDelay); //set a callback for some point in the future...To either wait for blanking time or set a timeout for listening
 void armINT0 (u8 onOrOff);  //arm or disarm INTO based on variable onOrOff which will just be 0/1.
-
+u8 getDistance(void);//this will return the 'SonicDistance' variable so it can be populated and sent to the PRX.
 
 
 //the two modes that the ISR will use to determine if I'm in pulse-making mode, blanking-time mode or waiting mode

@@ -29,10 +29,10 @@ volatile u8 sonicDistance;    //This will be the total number of timer ticks sin
 
 //This will indicate a signal bounced back to the receiver while we were listening...This is the most common outcome because the trap will be empty and the reflector plate is there
 ISR(INT0_vect){
-    sonicDistance = ((TCNT1+25)/4.6); //TCNT1 is the current number of 32uS ticks.  25 is the number called by kickTheCan when I finished firing.  Dividing their sum by 5 will get me pretty close (~8% error) to the distance in inches.
-    tog_tp1
+    sonicDistance = (TCNT1+25); //TCNT1 is the current number of 32uS ticks.  25 is the number called by kickTheCan when I finished firing. From here I will just send out the
+  
     prep4Fire();
-    led2_tog //debug
+  
 } //end of ISR.
 
 
@@ -51,7 +51,6 @@ ISR(TIMER1_COMPA_vect){
                 noisecounter = 0;	//reset for next time
                 ultrasonicMode = deadTime;	//need to wait for any directly coupled noise to finish
                 PORTB &= ~(0x04); //make sure that PORTB-2 is low
-                tog_tp1
                 kickTheCan(25);//starting point here. 25 * 32 =800...800/148 =~5.4inches' worth of blanking time.
                 
             }
@@ -59,16 +58,14 @@ ISR(TIMER1_COMPA_vect){
             
         case deadTime:  //this will be the return of 'kickTheCan' approx. 800uS after firing completes, where I'm idle to prevent triggering on direct-coupled signal.
             armINT0(1);
-            kickTheCan(46);
+            kickTheCan(230); //this is pushing my timer rollover ISR out to (230 * 32uS = 7.36mS).  This plus the 800uS of dead time gives a maximum listen time after firing of just over 8mS.  This corresponds to ~4.6' of rangefinding range.
             ultrasonicMode = listenMode;
             break;
   
             
         case listenMode: //if I got here it's because of a CTC interrupt while listening, which means that the timer timed out before the signal boucned back.
-            sonicDistance = 18; //while making my listenMode callback from kickTheCan(46) the maximum distance I could detect is 15", so calling this 18 is an indication that the timer timed out when I get this back
-            tog_tp1
+            sonicDistance = 0; //if nothing bounced back call this zero.
             prep4Fire();
-            led3_tog    //debug
             break;
                                                                                                                 
 }	//end of switch/Case
@@ -87,8 +84,8 @@ void prep4Fire (void){
     TIFR1 = (1<<OCF1A);	//clear flag for OCR1A match
     TIMSK1 = (1<<OCIE1A); //enable interrupt
     armINT0(0); //disable the interrupt
-    printByte(sonicDistance);   //For debugging, get a UART on there to see if I'm calculating these numbers correctly
-    printString("\n");
+ //   printByte(sonicDistance);   //For debugging, get a UART on there to see if I'm calculating these numbers correctly
+ //   printString("\n");
 }	//end of prep4Fire.
 
 
