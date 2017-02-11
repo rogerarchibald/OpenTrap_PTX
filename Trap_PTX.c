@@ -3,7 +3,7 @@
  *
  * Created: 12/21/15 7:06:26 PM
  *  Author: Roger
-Ditched the initial state machine that I'd been implementing with the PIR in favor of a much simpler 'on or off' check.
+
  */ 
 
 #include "Trap_PTX.h"
@@ -15,16 +15,6 @@ volatile static u8 camera_busy = 0;	//flag to detect if the camera is busy or no
 
 
 
-
-
-u8 fill_TX_bitfield(void){
-	u8 tempval = 0x15;	//0x15 is starting point, not critical
-//	tempval |= (checkIR());	//IR_stateval
-	tempval |= (readADC() << 6);	//readADC will return a 1 if the battery voltage is below a threshold
-	start_ADC_conv();	//initialize a new conversion for next time
-	tempval |= (chk_trap_status() << 5);	
-	return tempval;	//after setting appropriate bits this will be returned and sent in the TX packet
-}	//end of fill TX bitfield
 
 
 

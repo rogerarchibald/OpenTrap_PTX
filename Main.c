@@ -32,9 +32,9 @@ This code is currently for board Rev4 which uses an ultrasonic range finder as o
 //#define	PRX
 
 
-u8 dataout [] = {0x15, 0x55};	//Here are my 2 bytes, the first is a bitfield and the second is initially unused
+u8 datasout [3];    //this will be my 3 bytes going to remote...battery, counter and distance
 u8 packetin = 0;
-
+u8 cnty = 0;    //this is my counter that will go from 0 -255 and rollover.  I'll increment/send every transmit cycle, just as an indicator if I'm losing packets
 
 
 int main(void)
@@ -68,12 +68,22 @@ initialize_NRF();
  {   
 	
 	if(fifty_stat()){
-		
-		dataout[0] = fill_TX_bitfield();		//function to populate bitfield after scanning appropriate stuffs.
-		
+
+        datasout[0] = readADC();
+        datasout[1] = cnty;
+        cnty ++;
+        datasout[2] = getDistance();
+       /*
+        For debugging can print out the state of the 3 inputs, for general ops I don't think I want that.
+        for(int z = 0; z < 3; z ++){
+           printByte (datasout[z]);
+            printString(" ");
+      }
+       printString("\n");
+	*/
 	
-	
-	sendPayLoad(W_TX_PAYLOAD, dataout, 2);
+	sendPayLoad(W_TX_PAYLOAD, datasout, 3);
+        	start_ADC_conv();	//initialize a new conversion for next time
 	}	//end of where to go if we've detected a 50mS rollover via fifty_stat
 
 		if(check_Flag(RX_DR)){		//did I detect an awk-pack?

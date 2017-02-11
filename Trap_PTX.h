@@ -9,7 +9,6 @@
 #ifndef TRAP_PTX_H_
 #define TRAP_PTX_H_
 
-//#define u8 uint8_t
 
 #include <util/delay.h>
 #include <avr/io.h>
@@ -23,9 +22,6 @@
 
 
 //function prototypes that are specific to the PTX:
-
-
-u8 fill_TX_bitfield(void);	//This is going to check the various status for things that go in the PTX packet adn stuff the bitfield accordingly
 
 void read_PRX(void);	//will be called when a packet from PRX is detected, to determine if there are new commands and act accordingly.
 

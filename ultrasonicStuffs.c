@@ -84,8 +84,13 @@ void prep4Fire (void){
     TIFR1 = (1<<OCF1A);	//clear flag for OCR1A match
     TIMSK1 = (1<<OCIE1A); //enable interrupt
     armINT0(0); //disable the interrupt
- //   printByte(sonicDistance);   //For debugging, get a UART on there to see if I'm calculating these numbers correctly
- //   printString("\n");
+    //next line just turns on the LED if I get SOMETHING back from the ultrasonic..If it tiems out I turn it off
+    if(sonicDistance){
+        led3_on}else{
+            led3_off
+        }
+        
+    
 }	//end of prep4Fire.
 
 
@@ -121,3 +126,7 @@ void armINT0 (u8 onOrOff){
     
 }
 
+
+u8 getDistance(void){
+    return sonicDistance;
+}
