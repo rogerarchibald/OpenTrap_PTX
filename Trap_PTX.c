@@ -45,7 +45,7 @@ void read_PRX(void){
 
 void take_picture(void){
 	camera_busy = 1;	//set busy flag
-	PORTB &= ~(0x02);	//clear PB1 which is the shutter release pin
+    PORTB |= 0x02;	//set base of BJT controlling shutter release
 	set_camera_delay(1000);	//set a 1 second delay before the mS timer will call back the 'camera_done' function
 }
 
@@ -60,7 +60,7 @@ void clear_trap_busy(void){
 
 
 void camera_done(void){
-PORTB |= 0x02;	//stop pulling shutter release
+PORTB &= ~(0x02);	//stop pulling shutter release
 set_camera_delay(0);	//sending zero here will stop callbacks(push them back until the end of time)
 camera_busy = 0;	
 }

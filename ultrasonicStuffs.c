@@ -9,7 +9,7 @@
     -State Machine has 4 states:
         -Prepped for Fire: No Timer running, timer is set up to generate firing pulses but no clock is enabled
         -MakeNoise: Firing transducer for ~200uS
-        -deadTime: An 800uS delay where I'm allowing any direct-coupled signal to subside before listening for a return
+        -deadTime: An 960uS delay where I'm allowing any direct-coupled signal to subside before listening for a return
         -listenMode: Here I'll arm INT0 and listen.  From here I'm going to get an interrupt: either INT0 when something bounces back, or Timer1Overflow if the signal is blocked.
  
     Numbers to remember: 148uS/inch is sonic speed.  When I'm running kickTheCan my timer resolution is 32uS (8Mhz clock with a /256 prescaler
@@ -29,7 +29,7 @@ volatile u8 sonicDistance;    //This will be the total number of timer ticks sin
 
 //This will indicate a signal bounced back to the receiver while we were listening...This is the most common outcome because the trap will be empty and the reflector plate is there
 ISR(INT0_vect){
-    sonicDistance = (TCNT1+25); //TCNT1 is the current number of 32uS ticks.  25 is the number called by kickTheCan when I finished firing. From here I will just send out the
+    sonicDistance = (TCNT1+30); //TCNT1 is the current number of 32uS ticks.  30 is the number called by kickTheCan when I finished firing. From here I will just send out the
   
     prep4Fire();
   
@@ -51,14 +51,14 @@ ISR(TIMER1_COMPA_vect){
                 noisecounter = 0;	//reset for next time
                 ultrasonicMode = deadTime;	//need to wait for any directly coupled noise to finish
                 PORTB &= ~(0x04); //make sure that PORTB-2 is low
-                kickTheCan(25);//starting point here. 25 * 32 =800...800/148 =~5.4inches' worth of blanking time.
+                kickTheCan(30);//starting point here. 30 * 32 =960...960/148 =~6.5inches' worth of blanking time.
                 
             }
             break;
             
         case deadTime:  //this will be the return of 'kickTheCan' approx. 800uS after firing completes, where I'm idle to prevent triggering on direct-coupled signal.
             armINT0(1);
-            kickTheCan(230); //this is pushing my timer rollover ISR out to (230 * 32uS = 7.36mS).  This plus the 800uS of dead time gives a maximum listen time after firing of just over 8mS.  This corresponds to ~4.6' of rangefinding range.
+            kickTheCan(225); //this is pushing my timer rollover ISR out to (225 * 32uS = 7.2mS).  This plus the 960uS of dead time gives a maximum listen time after firing of just over 8mS.  This corresponds to ~4.6' of rangefinding range.
             ultrasonicMode = listenMode;
             break;
   
