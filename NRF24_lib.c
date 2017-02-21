@@ -186,7 +186,10 @@ set_csn;
 clr_ce;				//clear Chip Enable in case not already done.
 writeRegSing(CONFIG, CFGValues);	//initially powered down, CFGValues will be setup for either TX or RX by main depending on whether or not PRX is defined
 writeRegSing(SETUP_RETR, 0x77);	//2mS between retries, 7 total retries
-writeRegSing(RF_SETUP, 0x06);	//1MBPS, zero TX attenuation
+//writeRegSing(RF_SETUP, 0x06);	//1MBPS, zero TX attenuation
+writeRegSing(RF_SETUP, 0x04);	//1MBPS, -6dBm TX attenuation
+//writeRegSing(RF_SETUP, 0x02);	//1MBPS, -12dBm TX attenuation
+//writeRegSing(RF_SETUP, 0x00);	//1MBPS, -18dBm TX attenuation
 writeRegMult(RX_ADDR_P0, Addy, 5);
 writeRegMult(TX_ADDR, Addy, 5);		//Making TX and RX addresses the same
 writeRegSing(DYNPD, 0x01);	//enable Dynamic Payload for RX Pipe
