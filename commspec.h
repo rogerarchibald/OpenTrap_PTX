@@ -18,6 +18,7 @@ Battery is a raw 8-bit value from the ADC.  The trap itself will set an LED if t
  
  Distance is how many timer rollovers have occured between firing the transmitter and getting a signal bounced back.  Each timer rollover takes 32uS...So this number/4.625 = distance in inches.  If no signal is received in 8mS (~4.5' of range) then this will stop listening and return a 0.
 
+  
 ********************************************************************
 
 The PRX will be reading button/switch inputs and communicating with the PTX.  It's data will also be two bytes, with the following format:

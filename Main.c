@@ -63,9 +63,11 @@ enable_PRX();
 #endif
 
 initialize_NRF();
+    
+  
 
     while(1)
- {   
+ {
 	
 	if(fifty_stat()){
 
@@ -84,11 +86,13 @@ initialize_NRF();
 	
 	sendPayLoad(W_TX_PAYLOAD, datasout, 3);
         	start_ADC_conv();	//initialize a new conversion for next time
-	}	//end of where to go if we've detected a 50mS rollover via fifty_stat
+    }	//end of where to go if we've detected a 50mS rollover via fifty_stat
 
 		if(check_Flag(RX_DR)){		//did I detect an awk-pack?
-			led1_tog;		//here just want to see if I can see that I've received data and understand the mechanics of resetting the flag.
-			read_PRX();			
+	
+            led1_tog;		//here just want to see if I can see that I've received data and understand the mechanics of resetting the flag.
+			read_PRX();
+             
 		}	//end of what to do if an AWK-PAC
 		
 
@@ -97,12 +101,11 @@ initialize_NRF();
 		flushTx();	//clear transmitter FIFO
 		flushRx();
 		clear_Flag(ALL_FLAG);
+       
 		//TODO: Increment an error counter	
-	}	//end of what to do if an error flag comes back from teh NRF
-
-
-
-
+    }
+     
+     
 	}	//end of while(1)
 
 }	//end of main
