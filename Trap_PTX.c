@@ -30,7 +30,7 @@ void read_PRX(void){
 		trap_busy = 1;	//set busy flag
 		set_trap();
 	}//end of checking if the trap command is being sent
-	if(datain[0] & 0x10){
+	if((datain[0] & 0x10)&&(!camera_busy)){
 		take_picture();
 		}
 		//PWM lights based on signal from PRX. 

@@ -4,7 +4,7 @@
 
     - At the start of Main.c prior to the infinite loop, I'll call prep4Fire which will set up Timer1 to be ready to go.
     
-    - 25mS into my 50mS loop, timers.c will call 'enableNoise' which will enable the ouptut and turn on the timer, pulsing the Xducer for ~200uS.  After it's done pulsing, I'll call 'kickTheCan(25) which will give me an interrupt 800uS later.  This will give a suitable blanking delay
+    - 25mS into my 50mS loop, timers.c will call 'enableNoise' which will enable the ouptut and turn on the timer, pulsing the Xducer for ~200uS.  After it's done pulsing, I'll call 'kickTheCan(30) which will give me an interrupt 960uS later.  This will give a suitable blanking delay
  
     -State Machine has 4 states:
         -Prepped for Fire: No Timer running, timer is set up to generate firing pulses but no clock is enabled
@@ -120,7 +120,7 @@ void kickTheCan (u8 kickDelay){
 
 //enable/disable INT0 depending on the variable onOrOff
 void armINT0 (u8 onOrOff){
-    EICRA |= (1 << ISC01); //configure interrupt on falling edge of INT0
+    EICRA  =0; //configure interrupt on low level of INT0
     EIFR |= (1 << INTF0);   //clear the interrupt flag
     EIMSK = (onOrOff << INT0);  //enable or disable the interrupt based on the argument that's passed
     
