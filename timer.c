@@ -81,7 +81,7 @@ with the 15.3Hz frequency I'm getting, the resoulution is ~256uS/timer unit.  No
 void Timer0_init(void){
 	TCCR0A = 0x81;	//setting up OC0A and WGM00
 	TCCR0B = 0x05;	//setting /1024 prescaler which should be good for ~15Hz, perfect for servo
-	OCR0A = 0x05;		//Arm Trap
+	OCR0A = 0x09;		//Arm Trap
 	state_runner = pre_arm;	//initializing pointer to point at the pre-arm function.  This will turn on the servo's power and initialize the timer.
 	TIFR0 |= 0x01;	//write one to interrupt flag to clear it prior to enable.
 	TIMSK0 |= 0x01;	//enable interrupt on Timer0 overflow
@@ -128,7 +128,7 @@ u8 pre_set (u8* wait_time){
 
 
 u8 set (u8* wait_time){
-	OCR0A = 0x09;	//value to set trap
+	OCR0A = 0x05;	//value to set trap
 	*wait_time = 0x10;	//rollovers of 65mS clock...This is about 1 second
 	state_runner = arm;	//skip over pre-arm, that's where we'll intially jump into this at power-up
 	take_picture();	//trigger shutter release to snap a shot as the trap is setting
@@ -150,7 +150,7 @@ u8 pre_arm (u8* wait_time){
 //was hoping to disable timer in the name of saving power when the micro is sleeping.  Turns out that the micro gives a quick short pulse while turning off/on which is making noise on the servo.  Need to either 
 //shut off servo before disabling/enabling pulser or just live with the timer drawing current while down.  
 u8 arm (u8* wait_time){
-	OCR0A = 0x05;	//Value to arm trap
+	OCR0A = 0x09;	//Value to arm trap
 	*wait_time = 0x10;	//wait about 1 second to ensure that the servo has reached it's goal.
 	state_runner = off;	//point to off.
 	return 0;
