@@ -18,7 +18,6 @@
 
 #include "NRF24_lib.h"
 #include "ultrasonicStuffs.h"
-#include "USART.h"
 
 static u8 ultrasonicMode;	//index my ultrasonic state machine
 volatile u8 sonicDistance;    //This will be the total number of timer ticks since starting firing (32uS/tick) divided by 5.  This is a pretty close approximation to the distance in inches, and close enough for me since it'll prevent me having to go into floating point areas

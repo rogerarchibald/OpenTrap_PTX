@@ -1,6 +1,7 @@
 /*
  * timer.c
- *Will use this file to increment the mS timer and eventually to control the PWM for the LEDs
+ *  Here I'm using Timer2 to generate an interrupt every mS.  Timer0 will be used to drive the Boost converter to step my battery voltage up high enough to hit the solenoid
+ *
  * Created: 4/28/15 9:21:53 PM
  *  Author: Roger
  */ 
@@ -11,10 +12,10 @@
 
 static u32 mSecond = 0;		//millisecond counter coming at Timer2 Rollover
 
-static u32 camera_release = 0xFFFFFFFF;	//used by mS ISR to determine how lonw to hold down the camera shutter release.
+static u32 camera_release = 0xFFFFFFFF;	//used by mS ISR to determine how long to hold down the camera shutter release.
 static u8	fiftymsroll = 50;	//decremented every millisecond, when it reaches zero is a flag that 50mS have passed
 static u8	fiftyms_flag = 0;	//flag to be set every 50 milliseconds.
-static u8 trap_status = 0;		//This flag will be set to 1 after the trap is set and the state machine to set it has gone through all of its stages.
+static u8 trap_status = 0;		//This flag will be set to 1 after the trap is set
 
 ISR(TIMER2_COMPA_vect) //Will use this ISR to manage mS timer and call functions that need to get ramped/amped every X mS 
 {   
@@ -36,23 +37,24 @@ if(mSecond >= camera_release){
 }	//end of mS rollover
 
 
+ISR(TIMER0_COMPB_vect){
+    static uint16_t chopToDrop = 0; //this will be how many times the timer rolls over before I turn on the low-side FET, and ultimately until shutting hte timer off.
+    chopToDrop ++;
+    if(chopToDrop >= 15){
+        PORTD |= 0x40;  //turn on low-side FET for solenoid activation
+    }
+    if(chopToDrop>= 65500){ //this will be roughly .5 seconds which I think should suffice.  If I need to fire londer will need ot make chopToDrop 32-bit
+        
+        chopToDrop = 0; //reset for next time
+        TCCR0A &= ~(1 << COM0B1); //make sure that COM0B1 is low so that output will be off.
+        TCCR0B &= ~(1 << CS00); //disable clock
+        _delay_ms(1);   //bleed off extra voltage after turning off switcher
+        PORTD &= ~(0x40);   //turn off low-side FET
+        clear_trap_busy();
+    }
 
-ISR(TIMER0_OVF_vect) //Timer0 will rollover about every 65mS when running, as this is the clock for generating low freq. pulses for the servo.  Will use this rollover to increment a variable and compare it to a value set in the state machine
-{
-	static u8 t0ovf = 0;	//initialize compare variable. This gets incremented every rollover and compared to a target value to advance the state machine.
-	static u8 t0ovf_target =1;		//this is the target variable that gets set every rollover
-	u8 tmp_returnvar = 0;	//state runner will return this variable.  When the state machine is done this will be set to 1.  need to implement checking of this at end of ISR.
-	t0ovf ++;
-	if (t0ovf == t0ovf_target){
-		t0ovf = 0;
-		tmp_returnvar = state_runner(&t0ovf_target);	//call 'state_runner' which is a function pointer that's pointed to the applicable state.  The state machine will set the next t0ovf_target value and point the function pointer to the correct stage.  Will return a flag 
-		if(tmp_returnvar == 1) {}	//state_runner will return a 1 when the servo is in the armed position and has been turned off.
-			else if (tmp_returnvar == 2) {
-				clear_trap_busy();	//let the PTX file know that the state machine has run its course
-				trap_status = 1;	//setting flag that will be checked by the PTX TX function
-				}	
-				
-	}
+    
+    
 }
 
 
@@ -76,15 +78,20 @@ void set_camera_delay(u32 delay_time){
 
 
 
-/*Using Timer 0 output A to drive pulses into Servo.  Here's some early/initial config.  Will also want to have the ability to turn timer off to save battery when not drivng the servo.
-with the 15.3Hz frequency I'm getting, the resoulution is ~256uS/timer unit.  Not a whole lot of range but it will get me the extremes I need for setting/initializing the servo*/
+/*Will use Timer0 to drive teh Boost Converter.  Will set up Timer0 in Fast PWM Mode with no prescaler and OCR0A as Top.  With this setup
+ and an OCR0A value of 60, my clock frequency is ~131k.  OCR0B = 24 = 40% DC.  May tweak these values in the future
+ Timer0 init just sets up everything but it doesn't enable output on OC0B or turn on the clock.  These will be done in the 'SetTrap' function
+ */
+
 void Timer0_init(void){
-	TCCR0A = 0x81;	//setting up OC0A and WGM00
-	TCCR0B = 0x05;	//setting /1024 prescaler which should be good for ~15Hz, perfect for servo
-	OCR0A = 0x09;		//Arm Trap
-	state_runner = pre_arm;	//initializing pointer to point at the pre-arm function.  This will turn on the servo's power and initialize the timer.
-	TIFR0 |= 0x01;	//write one to interrupt flag to clear it prior to enable.
-	TIMSK0 |= 0x01;	//enable interrupt on Timer0 overflow
+    OCR0A = 60; //this will be TOP, determines PWM Frequency
+    OCR0B =24;  //this is trip point, will determine DC
+    TCCR0A |= (1 << WGM01) | (1 << WGM00);   //non-inverting PWM with OCR0A as Top
+    TCCR0B |= (1 << WGM02);
+    TIFR0 |= (1 << OCF0B);  //clear interrupt flag
+    TIMSK0 |= (1 << OCIE0B);    //unmask Timer0CompB Interrupt
+    
+    
 }
 
 
@@ -113,68 +120,16 @@ u8	fifty_stat(void){
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////
-/*State Machine Functions which will be cycled through based on calls from Timer0 rollover interrupt.  The flow is a bit weird but seems to me like the best way to do it.  Initially will go to pre-arm, this is pointed to by the Timer0 init function
-*/
-
-u8 pre_set (u8* wait_time){
-	OCR0A = 0;	//make sure timer is off
-	TCCR0B |= 0x05;	//setting prescaler bits which will enable clock
-	PORTD |= 0x20;	//turn on servo
-	*wait_time = 0x03;	//this will be the number of 65mS period counter rollovers...3 corresponds to ~185mSeconds...need to scope the time for caps to charge.
-	state_runner = set;
-	return 0;	//will only return 1 at end of 'off' pointer
-}
-
-
-u8 set (u8* wait_time){
-	OCR0A = 0x05;	//value to set trap
-	*wait_time = 0x10;	//rollovers of 65mS clock...This is about 1 second
-	state_runner = arm;	//skip over pre-arm, that's where we'll intially jump into this at power-up
-	take_picture();	//trigger shutter release to snap a shot as the trap is setting
-	return 2;	//if seeing a 2 on the return can set a flag saying that we're set.
-}
-
-
-//pre-arm will get pointed to right after the timer is initialized, as this will get everything set up for arming the trap and waiting for the timer to be re-activated after it is pointed towards 'pre-set'.
-u8 pre_arm (u8* wait_time){
-	OCR0A = 0;	//ensure we're off
-	TCCR0B |= 0x05;	//make sure clock is enabled
-	PORTD |= 0x20;	//turn on servo
-	*wait_time = 0x08;		//this will be the number of 65mS period counter rollovers...8 corresponds to ~.5 seconds
-	state_runner = arm;	//point to arm where this will actually run the servo to the arm position.
-	return 0;
-}
-
-
-//was hoping to disable timer in the name of saving power when the micro is sleeping.  Turns out that the micro gives a quick short pulse while turning off/on which is making noise on the servo.  Need to either 
-//shut off servo before disabling/enabling pulser or just live with the timer drawing current while down.  
-u8 arm (u8* wait_time){
-	OCR0A = 0x09;	//Value to arm trap
-	*wait_time = 0x10;	//wait about 1 second to ensure that the servo has reached it's goal.
-	state_runner = off;	//point to off.
-	return 0;
-}
-
-
-u8 off (u8* wait_time){
-	OCR0A = 0;
-	PORTD &= ~(0x20);	//turn off power to servo
-	*wait_time = 0x01;	//make sure that the new overflow counter target is going to get reached next ISR. 
-	TIMSK2 &= ~(0x01);	//disable Timer0 Overflow Interrupts
-	return 1;
-}
-
-//////////////////////////////////////////////////////////////end of state machine functions
 
 //this is determined by the state machine and used as a flag in the bitfield being sent to the PRX
 u8 chk_trap_status(void){
 	return trap_status;
 }
 
-//When this is called it will re-initialize the Timer0 interrupt and point function pointer towards getting ready to set.
+//When this is called it will enable Timer0 and start the chain of events that results in the trap setting.
 void set_trap (void){
-	TIMSK2 |= 0x01;	//re-enable Timer0 Overflow Interrupts
-	state_runner = pre_set;	//point to preparing to arm
+    TIFR0 |= (1 << OCF0B);
+    TCCR0A |= (1 << COM0B1);    //route output from PWM to OC0B
+    TCCR0B |= (1 << CS00);  //enable clocksource
 }
 

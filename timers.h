@@ -29,17 +29,9 @@
 //////////////////////////////////////////////////////////
 /*Initialization function prototypes*/
 void Timer2_init(void);	//Timer2 will be used for mS timer
-void Timer0_init(void);	//Timer0 will drive Servo output for trap.
+void Timer0_init(void);	//Timer0 will drive Boost converter for trap
 
-//prototype function pointer that'll run through the state machine of setting the trap based on Timer0 rollovers.
-u8 (*state_runner)(u8* time);
 
-//Servo Drive State Machine Function Prototypes:
-u8 pre_set (u8* wait_time);
-u8 set (u8* wait_time);
-u8 pre_arm (u8* wait_time);
-u8 arm (u8* wait_time);
-u8 off (u8* wait_time);
 
 //functions related to mS timer.  One will return current mS value, the other will set a value that the mS ISR will compare to the current mS timer and call a function if the timer has gotten there.
 u32 get_mS_cnt (void);	
@@ -50,9 +42,7 @@ u8 chk_trap_status(void);	//this will return a 0 if the trap hasn't been set, a 
 void set_trap (void);		//once everything is armed this will set the wheels in motion to set the trap.
 void take_picture(void);		//trigger shutter release
 
-//functions to enable/disable 38K timer for Ir LED
-void T38KOff(void);
-void T38KOn(void);
+
 
 
 #endif /* TIMERS_H_ */

@@ -40,9 +40,9 @@ u8 cnty = 0;    //this is my counter that will go from 0 -255 and rollover.  I'l
 int main(void)
 {
 	
-DDRD |= 0xFA;	//Chip Select Not, TXData UART, Timer0A outputs, servo power enable, ultrasonic input on PD2.  Power_on output on PD4.  Light control on PD3
-PORTD |= 0x10;	//Setting PortD4 to keep the power turned on.
-Timer0_init();	//initialize Timer0 for Servo drive
+DDRD |= 0xFA;	//PD7 = CSN, PD6 = low side FET for solenoid drive, PD5 = OC0B = Boost drive, PD4 = Pwr on FET for LDO, PD3 = Power LED, PD2 = sonic RX, PD1 = USART TX, PD0 = USART RX
+PORTD = 0x10;	//Setting PortD4 to keep the power turned on.
+Timer0_init();	//initialize Timer0 for Boost drive
 Timer2_init();	//using this for mS timer/50mS rollover
 ADC_Init();
 PORTB= 0; //make sure shutter release doesn't get triggered when initializing DDR below.
